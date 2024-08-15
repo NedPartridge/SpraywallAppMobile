@@ -2,15 +2,60 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SpraywallAppMobile.Pages.AnonymousUser">
-    <VerticalStackLayout>
-        <Grid ColumnDefinitions="2*, 4*, 2*, *, 0.3*">
-            <Label 
+    <Grid>
+        <VerticalStackLayout>
+            <Grid ColumnDefinitions="2*, 4*, 2*, *, 0.3*">
+                <Label 
                     Grid.Column="1"
                     Text="Spray Wall App"
                     FontSize="40"
                     VerticalTextAlignment="Center"
                     HorizontalTextAlignment="Center"/>
-            <Image Source="user_circle.svg" Grid.Column="3" VerticalOptions="Start"/>
-        </Grid>
-    </VerticalStackLayout>
+                <Frame
+                        Padding="0"
+                        BorderColor="Transparent"
+                        VerticalOptions="Start"
+                        Grid.Column="3" >
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnOpenOverlayClicked"/>
+                    </Frame.GestureRecognizers>
+                    <Image Source="user_circle.svg" VerticalOptions="Start"/>
+                </Frame>
+            </Grid>
+        </VerticalStackLayout>
+
+        <!-- Overlay -->
+        <ContentView x:Name="Overlay"
+                         BackgroundColor="#80000000"
+                         IsVisible="False">
+            <Grid HorizontalOptions="Center"
+                      VerticalOptions="Center"
+                      WidthRequest="300"
+                      HeightRequest="200"
+                      BackgroundColor="White"
+                      Padding="20">
+
+                <!-- Text -->
+                <Label Text="Create an account to log climbs"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           FontSize="18"
+                           Margin="0,0,0,20" />
+
+                <!-- Buttons -->
+                <StackLayout Orientation="Horizontal"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="End">
+                    <Button Text="Cancel"
+                                Clicked="OnCloseOverlayClicked"
+                                HorizontalOptions="EndAndExpand"
+                                Margin="0,0,10,0" />
+
+                    <Button Text="Proceed"
+                                Clicked="OnLoginClick"
+                                HorizontalOptions="StartAndExpand" />
+                </StackLayout>
+            </Grid>
+        </ContentView>
+    </Grid>
 </ContentPage>

@@ -2,10 +2,25 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SpraywallAppMobile.Pages.LogIn">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+    <Grid>
+        <Image
+            Source="log_in_background.png"
+            Opacity="0.15"
+            Aspect="AspectFill"/>
+        <Grid RowDefinitions="*, 2*, *, *, 2*, *, 2*">
+            <Label 
+                Text="Log in"
+                VerticalOptions="Center" 
+                HorizontalOptions="Center" 
+                FontSize="20"/>
+            <VerticalStackLayout Padding="40" Grid.Row="2">
+                <Label Padding="10,0,0,0" Text="Email:"/>
+                <Entry x:Name="email"/>
+            </VerticalStackLayout>
+            <VerticalStackLayout Padding="40" Grid.Row="3">
+                <Label Padding="10,0,0,0" Text="Password:"/>
+                <Entry IsPassword="True" x:Name="password"/>
+            </VerticalStackLayout>
+        </Grid>
+    </Grid>
 </ContentPage>

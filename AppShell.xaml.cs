@@ -11,11 +11,12 @@ namespace SpraywallAppMobile
             InitializeComponent();
 
             // Map relevant pages to routes
-            // Routes to all be totally lowercase
+            // Route names to be based on page class names
             // Routes allow the pages to be called up from other places in the application
-            Routing.RegisterRoute("login", typeof(LogIn));
-            Routing.RegisterRoute("signup", typeof(SignUp));
-            Routing.RegisterRoute("anonymoususer", typeof(AnonymousUser));
+            Routing.RegisterRoute(nameof(LogIn), typeof(LogIn));
+            Routing.RegisterRoute(nameof(SignUp), typeof(SignUp));
+            Routing.RegisterRoute(nameof(AnonymousUser), typeof(AnonymousUser));
+            Routing.RegisterRoute(nameof(Home), typeof(Home));
         }
     }
 }
