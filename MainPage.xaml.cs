@@ -8,9 +8,18 @@ namespace SpraywallAppMobile
         {
             InitializeComponent();
         }
-        private void LoginButtonClicked(object sender, TappedEventArgs e)
+        private async void LogInButtonClicked(object sender, TappedEventArgs e)
         {
-            Console.WriteLine("Login clicked!");
+            await Shell.Current.GoToAsync("login");
+        }
+        private async void SignUpButtonClicked(object sender, TappedEventArgs e)
+        {
+            await Shell.Current.GoToAsync("signup");
+        }
+
+        private async void AnonymousUserButtonClicked(object sender, TappedEventArgs e)
+        {
+            await Shell.Current.GoToAsync("anonymoususer");
         }
     }
 
