@@ -13,18 +13,44 @@
                     VerticalOptions="Center" 
                     HorizontalOptions="Center" 
                     FontSize="20"/>
+            
+            <!--Create account input controls-->
             <VerticalStackLayout Padding="40" Grid.Row="2">
                 <Label Padding="10,0,0,0" Text="Name:"/>
                 <Entry x:Name="name"/>
             </VerticalStackLayout>
-            <VerticalStackLayout Padding="40" Grid.Row="2">
+            <VerticalStackLayout Padding="40" Grid.Row="3">
                 <Label Padding="10,0,0,0" Text="Email:"/>
                 <Entry x:Name="email"/>
             </VerticalStackLayout>
-            <VerticalStackLayout Padding="40" Grid.Row="3">
+            <VerticalStackLayout Padding="40" Grid.Row="4">
                 <Label Padding="10,0,0,0" Text="Password:"/>
                 <Entry IsPassword="True" x:Name="password"/>
             </VerticalStackLayout>
+
+            <HorizontalStackLayout Spacing="40" Grid.Row="6" HorizontalOptions="Center" VerticalOptions="Center">
+                <!--Back button-->
+                <Frame
+                        Padding="10, 20, 10, 20"
+                        BorderColor="Black"
+                        VerticalOptions="Center">
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnBackButtonClicked"/>
+                    </Frame.GestureRecognizers>
+                    <Image MaximumWidthRequest="100" Source="left_arrow.svg" VerticalOptions="Start"/>
+                </Frame>
+    
+                <!--Next button-->
+                <Frame
+                        Padding="0"
+                        BorderColor="Transparent"
+                        VerticalOptions="Center">
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnSubmitButtonClicked"/>
+                    </Frame.GestureRecognizers>
+                    <Image Source="next_circle_arrow.svg" VerticalOptions="Start"/>
+                </Frame>
+            </HorizontalStackLayout>
         </Grid>
     </Grid>
 </ContentPage>

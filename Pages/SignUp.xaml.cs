@@ -1,5 +1,6 @@
 using SpraywallAppMobile.Models;
 using System.Text;
+using System.Text.Json;
 
 namespace SpraywallAppMobile.Pages;
 
@@ -14,14 +15,20 @@ public partial class SignUp : ContentPage
     // Exit the sign up screen, go back to the signup/login choice
     private async void OnBackButtonClicked(object sender, TappedEventArgs e)
     {
-        await Shell.Current.GoToAsync(nameof(MainPage));
+        await Shell.Current.GoToAsync("..");
     }
 
     // Create a new user account, based on the details provided
     // But first, authenticate the deetz.
-    private async void AnonymousUserButtonClicked(object sender, TappedEventArgs e)
+    private async void OnSubmitButtonClicked(object sender, TappedEventArgs e)
     {
-        if(!IsValidEmail(email.Text))
+        if (email.Text == null || password.Text == null || name.Text == null) 
+        {
+            await DisplayAlert("Invalid entry", "Please fill out all fields", "ok");
+            return; 
+        }
+
+        if (!IsValidEmail(email.Text))
         {
             await DisplayAlert("Invalid email", "Please enter a valid email address", "ok");
             return;
@@ -29,14 +36,22 @@ public partial class SignUp : ContentPage
 
         if(!IsValidPassword(password.Text))
         {
-            await DisplayAlert("Invalid password", "Must be between 6 and 12 characters", "ok");
+            await DisplayAlert("Invalid password", "Must be between 6 and 12 characters\nMust use number, letters (upper & lower case), symbols", "ok");
             return;
         }
 
         UserToCreate User = new(name.Text, email.Text, Encoding.ASCII.GetBytes(password.Text));
+
+        string serialisedUser = JsonSerializer.Serialize(User);
+        Console.WriteLine(serialisedUser);
+
+
         await Shell.Current.GoToAsync(nameof(Home));
     }
 
+
+    // Validate email address
+    // TODO: Confirm email exists (external service?)
     bool IsValidEmail(string email)
     {
         var trimmedEmail = email.Trim();
@@ -57,7 +72,7 @@ public partial class SignUp : ContentPage
     }
 
 
-
+    // Confirm password is valid - ie, not 'weak', or beyond storage capabilities. 
     bool IsValidPassword(string password)
     {
         if (password == null)
@@ -66,6 +81,7 @@ public partial class SignUp : ContentPage
         if (password.Length < 6 || password.Length > 12)
             return false;
 
+        // Using linq instead of regex, for conveniance. 
         bool hasUpperCase = password.Any(char.IsUpper);
         bool hasLowerCase = password.Any(char.IsLower);
         bool hasDigit = password.Any(char.IsDigit);
