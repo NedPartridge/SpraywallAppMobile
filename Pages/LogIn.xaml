@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="SpraywallAppMobile.Pages.LogIn">
+             x:Class="SpraywallAppMobile.Pages.LogIn"
+             Shell.NavBarIsVisible="False">
+    <!--Login page - accepts an email, and password.-->
     <Grid>
         <Image
             Source="log_in_background.png"
@@ -21,6 +23,31 @@
                 <Label Padding="10,0,0,0" Text="Password:"/>
                 <Entry IsPassword="True" x:Name="password"/>
             </VerticalStackLayout>
+
+
+            <HorizontalStackLayout Spacing="40" Grid.Row="5" HorizontalOptions="Center" VerticalOptions="Center">
+                <!--Back to 'main page' button-->
+                <Frame
+                        Padding="10, 20, 10, 20"
+                        BorderColor="Black"
+                        VerticalOptions="Center">
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnBackButtonClicked"/>
+                    </Frame.GestureRecognizers>
+                    <Image MaximumWidthRequest="100" Source="left_arrow.svg" VerticalOptions="Start"/>
+                </Frame>
+
+                <!--Confirm log in button-->
+                <Frame
+                        Padding="0"
+                        BorderColor="Transparent"
+                        VerticalOptions="Center">
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnLoginButtonClicked"/>
+                    </Frame.GestureRecognizers>
+                    <Image Source="next_circle_arrow.svg" VerticalOptions="Start"/>
+                </Frame>
+            </HorizontalStackLayout>
         </Grid>
     </Grid>
 </ContentPage>

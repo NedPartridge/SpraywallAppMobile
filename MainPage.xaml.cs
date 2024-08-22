@@ -4,9 +4,9 @@ using System.Diagnostics;
 namespace SpraywallAppMobile;
 
 // Code behind for the landing page
-// TODO: change from 'main page' to 'landing page'
     public partial class MainPage : ContentPage
     {
+        // Initialise the component - only applicable to certain deployment platforms.
         public MainPage()
         {
             InitializeComponent();

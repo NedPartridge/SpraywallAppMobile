@@ -1,13 +1,9 @@
-using SpraywallAppMobile.Models;
-using System.Text;
-using System.Text.Json;
-
 namespace SpraywallAppMobile.Pages;
 
 public partial class SignUp : ContentPage
 {
-    
-	public SignUp()
+    // Initialise the component - only applicable to certain deployment platforms.
+    public SignUp()
 	{
 		InitializeComponent();
 	}
@@ -15,13 +11,16 @@ public partial class SignUp : ContentPage
     // Exit the sign up screen, go back to the signup/login choice
     private async void OnBackButtonClicked(object sender, TappedEventArgs e)
     {
+        // Cannot route directly to page: instead, 'step' 'back' one page
         await Shell.Current.GoToAsync("..");
     }
+
 
     // Create a new user account, based on the details provided
     // But first, authenticate the deetz.
     private async void OnSubmitButtonClicked(object sender, TappedEventArgs e)
     {
+        // Validate data
         if (email.Text == null || password.Text == null || name.Text == null) 
         {
             await DisplayAlert("Invalid entry", "Please fill out all fields", "ok");
@@ -39,16 +38,7 @@ public partial class SignUp : ContentPage
             await DisplayAlert("Invalid password", "Must be between 6 and 12 characters\nMust use number, letters (upper & lower case), symbols", "ok");
             return;
         }
-
-        UserToCreate User = new(name.Text, email.Text, Encoding.ASCII.GetBytes(password.Text));
-
-        string serialisedUser = JsonSerializer.Serialize(User);
-        Console.WriteLine(serialisedUser);
-
-
-        await Shell.Current.GoToAsync(nameof(Home));
     }
-
 
     // Validate email address
     // TODO: Confirm email exists (external service?)
@@ -75,13 +65,15 @@ public partial class SignUp : ContentPage
     // Confirm password is valid - ie, not 'weak', or beyond storage capabilities. 
     bool IsValidPassword(string password)
     {
+        // Existance check
         if (password == null)
             return false;
 
+        // Range check
         if (password.Length < 6 || password.Length > 12)
             return false;
 
-        // Using linq instead of regex, for conveniance. 
+        // Using linq instead of regex, for conveniance and readability. 
         bool hasUpperCase = password.Any(char.IsUpper);
         bool hasLowerCase = password.Any(char.IsLower);
         bool hasDigit = password.Any(char.IsDigit);

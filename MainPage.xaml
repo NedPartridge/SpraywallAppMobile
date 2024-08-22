@@ -3,12 +3,21 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SpraywallAppMobile.MainPage"
              >
-
+    <!--
+    Landing page for the application
+    New application instances default to this page, and it is also 
+    accessible by 'logging out' of an active session
+    -->
+    <!--
+        Content page must receive a singular control
+        The Grid serves no other purpose.
+        -->
     <Grid>
         <Image
             Source="landing_background.png"
             Opacity="0.15"
             Aspect="AspectFill"/>
+        <!--Grid contains all controls-->
         <Grid RowDefinitions="*,*,*,*,*,*,*">
             <Label FontSize="50" Grid.RowSpan="2" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" WidthRequest="300" Grid.Row="1">
                 Spray Wall App
@@ -67,6 +76,10 @@
                     </Grid>
                 </Frame>
             </HorizontalStackLayout>
+            <!--
+                Redirect the user to a reduced-capability, anonymous session
+                no login required.
+            -->
             <Frame Grid.Row="4"
                     BackgroundColor="Transparent"
                     BorderColor="Black"

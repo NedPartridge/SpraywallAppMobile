@@ -1,61 +1,202 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="SpraywallAppMobile.Pages.AnonymousUser">
-    <Grid>
-        <VerticalStackLayout>
-            <Grid ColumnDefinitions="2*, 4*, 2*, *, 0.3*">
-                <Label 
+             x:Class="SpraywallAppMobile.Pages.AnonymousUser"
+             Shell.NavBarIsVisible="False">
+    <Grid RowDefinitions="*, 4*">
+        <!--
+        Page's primary content
+        Basically a one-page, restricted version of the main app.
+        -->
+        <Frame CornerRadius="0" BorderColor="Transparent" Padding="0" Margin="10">
+            <Grid ColumnDefinitions="2*, 4*, 2*, *">
+            <Label
+                    Padding="0,20,0,0"
                     Grid.Column="1"
                     Text="Spray Wall App"
                     FontSize="40"
-                    VerticalTextAlignment="Center"
                     HorizontalTextAlignment="Center"/>
                 <Frame
                         Padding="0"
                         BorderColor="Transparent"
+                        HorizontalOptions="End"
+                        Grid.Column="3"
                         VerticalOptions="Start"
-                        Grid.Column="3" >
-                    <Frame.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnOpenOverlayClicked"/>
-                    </Frame.GestureRecognizers>
-                    <Image Source="user_circle.svg" VerticalOptions="Start"/>
+>
+                    <ImageButton Source="user_circle.svg" Clicked="OnOpenAccountOverlayClicked"/>
                 </Frame>
             </Grid>
-        </VerticalStackLayout>
+        </Frame>
 
-        <!-- Overlay -->
-        <ContentView x:Name="Overlay"
-                         BackgroundColor="#80000000"
-                         IsVisible="False">
-            <Grid HorizontalOptions="Center"
-                      VerticalOptions="Center"
-                      WidthRequest="300"
-                      HeightRequest="200"
-                      BackgroundColor="White"
-                      Padding="20">
+        <!--Page's content
+            Grid inside frame to permit a border-->
+        <Border Grid.Row="1"
+                StrokeThickness="1"
+                Stroke="Black"
+                Margin="3"
+                Padding="0">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="5"/>
+            </Border.StrokeShape>
+            <Grid RowDefinitions="*,10*,6*">
+                <!--Title text and change wall button-->
+                <HorizontalStackLayout Padding="10">
+                    <Label x:Name="WallName" 
+                           Text="FillerWall" 
+                           HorizontalOptions="StartAndExpand"/>
+                    <ImageButton Source="switch_wall.svg"
+                                 HorizontalOptions="End"
+                                 HeightRequest="30"
+                                 WidthRequest="30"
+                                 Clicked="OnSwitchWallClicked"/>
+                </HorizontalStackLayout>
+                <!--
+                    Image of the wall, with an overlay of the route.
+                    Buttons to tab between climbs
+                -->
+                <Border Grid.Row="1" 
+                        Stroke="Black"
+                        Padding="0">
+                    <Image Source="filler_image.jpg"
+                           Aspect="AspectFill"/>
+                </Border>
+                
+                <!--
+                    Route details
+                    Updated when the climb changes (ie tab increment/decrement)
+                -->
+                <Grid RowDefinitions="*,*,*,*,2*,*" Grid.Row="2" Padding="5">
+                    <Label x:Name="ClimbName" 
+                            Text="*climb name*" 
+                            FontSize="24"
+                            VerticalOptions="Center"/>
+                    <Label x:Name="ClimbGrade" 
+                            Text="*climb grade*" 
+                            Grid.Row="1"
+                            VerticalOptions="Center"/>
+                    <Label x:Name="ClimbSetter" 
+                            Text="*setter name*" 
+                            Grid.Row="2"
+                            VerticalOptions="Center"/>
+                    
+                    <!--Attempts controls: increment/decrement, and running total-->
+                    <HorizontalStackLayout
+                                        VerticalOptions="Center"
+                                        Spacing="10"
+                                        Grid.Row="3">
+                        <Label Text="My attemps:"
+                                VerticalOptions="Center"/>
+                        <ImageButton 
+                            Source="minus.svg"
+                            BackgroundColor="Transparent"
+                            Padding="0"
+                            BorderColor="Black" 
+                            BorderWidth="1" 
+                            HeightRequest="30"
+                            WidthRequest="30"
+                            CornerRadius="3"
+                            VerticalOptions="Center"
+                            Aspect="AspectFill"
+                            Clicked="DecrementAttempts"/>
+                        <Label x:Name="ClimbAttempts" 
+                            Text="#"
+                            VerticalOptions="Center"/>
+                        <ImageButton 
+                            Source="plus.svg"
+                            BackgroundColor="Transparent"
+                            Padding="0"
+                            BorderColor="Black" 
+                            BorderWidth="1" 
+                            HeightRequest="30"
+                            WidthRequest="30"
+                            CornerRadius="3"
+                            VerticalOptions="Center"
+                            Aspect="AspectFill"
+                            Clicked="IncrementAttempts"/>
+                    </HorizontalStackLayout>
 
-                <!-- Text -->
-                <Label Text="Create an account to log climbs"
-                           HorizontalOptions="Center"
-                           VerticalOptions="Center"
-                           FontSize="18"
-                           Margin="0,0,0,20" />
-
-                <!-- Buttons -->
-                <StackLayout Orientation="Horizontal"
-                                 HorizontalOptions="Center"
-                                 VerticalOptions="End">
-                    <Button Text="Cancel"
-                                Clicked="OnCloseOverlayClicked"
-                                HorizontalOptions="EndAndExpand"
-                                Margin="0,0,10,0" />
-
-                    <Button Text="Proceed"
-                                Clicked="OnLoginClick"
-                                HorizontalOptions="StartAndExpand" />
-                </StackLayout>
+                    
+                    <!--
+                        On the main page, these act as 'flag' and 'log'
+                        Since the use is signed out, instead simply prompt them to sign in.
+                    -->
+                    <Grid Grid.Row="5" ColumnDefinitions="6*,*,*">
+                        <ImageButton Source="alert_triangle.svg" 
+                                     Padding="0"
+                                     Grid.Column="1"
+                                     Clicked="OnOpenAccountOverlayClicked"/>
+                        <ImageButton Source="file_checkmark.svg" 
+                                     Padding="0"
+                                     Grid.Column="2"
+                                     Clicked="OnOpenAccountOverlayClicked"/>
+                    </Grid>
+                </Grid>
             </Grid>
+        </Border>
+        
+        
+        <!-- 'Switch account' overlay - deactivated by default-->
+        <ContentView x:Name="Overlay"
+                     Grid.RowSpan="1000"
+                     Grid.ColumnSpan="1000"
+                     BackgroundColor="#80000000"
+                     IsVisible="False">
+            <Frame HorizontalOptions="Center"   
+                   VerticalOptions="Center"
+                   WidthRequest="300"
+                   HeightRequest="200"
+                   BackgroundColor="White"
+                   Padding="20"
+                   CornerRadius="20">
+                <Grid HorizontalOptions="Center"
+                        RowDefinitions="*,2*,*,2*,*"
+                        VerticalOptions="Center"
+                        WidthRequest="300"
+                        HeightRequest="200"
+                        BackgroundColor="White"
+                        Padding="20">
+
+                    <!-- Text: tell the user what's what -->
+                    <Label Grid.Row="1"
+                                Text="Create an account to log climbs"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center"
+                                FontSize="18" />
+
+                    <!-- Buttons: either close popup, or return to login/signup -->
+                    <Grid Grid.Row="3"
+                          ColumnDefinitions="*,auto,30,auto,*">
+                        <VerticalStackLayout
+                            VerticalOptions="Center"
+                            Grid.Column="1">
+                            <Label Text="whoops?" 
+                                   HorizontalOptions="Center"/>
+                            <Frame
+                                BorderColor="Black"
+                                CornerRadius="15"
+                                Padding="10">
+                                <ImageButton
+                                    Source="left_arrow.svg"
+                                    HeightRequest="30"
+                                    WidthRequest="100"
+                                    HorizontalOptions="Center"
+                                    Clicked="OnCloseOverlayClicked" />
+                            </Frame>
+                        </VerticalStackLayout>
+                        <ImageButton
+                                VerticalOptions="Center"
+                                Grid.Column="3"
+                                Padding="-2.5"
+                                WidthRequest="50"
+                                HeightRequest="50" 
+                                CornerRadius="30"
+                                Source="arrow_circle_right.svg" 
+                                Aspect="AspectFit"
+                                BackgroundColor="#CEFFA7"
+                                Clicked="OnLoginClick"/>
+                    </Grid>
+                </Grid>
+            </Frame>
         </ContentView>
     </Grid>
 </ContentPage>

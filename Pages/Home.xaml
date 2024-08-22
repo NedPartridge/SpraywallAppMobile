@@ -3,6 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SpraywallAppMobile.Pages.Home"
              Title="Home">
+    <!--
+        Application home page, supporting all major functionality
+        Only accessible after a succesful login/sign up, all web requests are 
+        provided with authentication from that step.
+    -->
     <VerticalStackLayout>
         <Label 
             Text="Home page ~"
