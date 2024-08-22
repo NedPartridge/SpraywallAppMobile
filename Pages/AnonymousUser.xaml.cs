@@ -36,7 +36,7 @@ public partial class AnonymousUser : ContentPage
     // Redirect user to wall selection screen
     private async void OnSwitchWallClicked(object sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync(nameof(SelectWall));
+        Console.WriteLine("In progress, here");
     }
 
     // Increment the number of attempts on the currently visible climb
