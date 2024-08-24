@@ -18,6 +18,8 @@ namespace SpraywallAppMobile
             Routing.RegisterRoute(nameof(AnonymousUser), typeof(AnonymousUser));
             Routing.RegisterRoute(nameof(Home), typeof(Home));
             Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));
+            Routing.RegisterRoute(nameof(AnonymousSelectWall), typeof(AnonymousSelectWall));
+            Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));
         }
     }
 }

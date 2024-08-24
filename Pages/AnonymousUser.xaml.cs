@@ -11,11 +11,20 @@ public partial class AnonymousUser : ContentPage
 	}
 
 
+    // Open the choice to sign in to, or create, an account
+    private void OnOpenAccountOverlayClicked(object sender, EventArgs e)
+    {
+        Overlay.IsVisible = true;
+    }
+
     // Close the anonymity choice overlay
     private void OnCloseOverlayClicked(object sender, EventArgs e)
     {
         Overlay.IsVisible = false;
     }
+
+
+
 
 
     // Redirect user to the login/signup selection page 
@@ -27,16 +36,10 @@ public partial class AnonymousUser : ContentPage
         await Shell.Current.GoToAsync("..");
     }
 
-    // Open the choice to sign in to, or create, an account
-    private void OnOpenAccountOverlayClicked(object sender, EventArgs e)
-    {
-        Overlay.IsVisible = true;
-    }
-
     // Redirect user to wall selection screen
     private async void OnSwitchWallClicked(object sender, EventArgs e)
     {
-        Console.WriteLine("In progress, here");
+        await Shell.Current.GoToAsync(nameof(AnonymousSelectWall));
     }
 
     // Increment the number of attempts on the currently visible climb

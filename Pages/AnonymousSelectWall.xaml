@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SpraywallAppMobile.Pages.AnonymousSelectWall"
+             Title="AnonymousSelectWall"
+             Shell.NavBarIsVisible="False">
+    <Grid RowDefinitions="*, 4*">
+        <!--
+            Outermost grid wraps 2 children
+            1. title + login button
+            2. Wall selection panel:
+                - QR code scanner
+                - Search
+         -->
+        <Frame CornerRadius="0" BorderColor="Transparent" Padding="0" Margin="10">
+            <Grid ColumnDefinitions="2*, 4*, 2*, *">
+                <Label
+                    Padding="0,20,0,0"
+                    Grid.Column="1"
+                    Text="Select Wall"
+                    FontSize="30"
+                    HorizontalTextAlignment="Center"/>
+                <Frame
+                        Padding="0"
+                        BorderColor="Transparent"
+                        HorizontalOptions="End"
+                        Grid.Column="3"
+                        VerticalOptions="Start">
+                    <ImageButton Source="user_circle.svg" Clicked="OnOpenAccountOverlayClicked"/>
+                </Frame>
+            </Grid>
+        </Frame>
+
+        <!--
+            First of two mini components
+            QR code scanner, opens camera and identifies a wall.
+        -->
+        <Border x:Name="Scanner"
+                IsVisible="True"
+                Grid.Row="1"
+                StrokeThickness="1"
+                Stroke="Black"
+                Margin="3"
+                Padding="0">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="5"/>
+            </Border.StrokeShape>
+            <Grid RowDefinitions="*,10*,3*">
+                <!--
+                    Control which wall selection option is active
+                -->
+                <Grid ColumnDefinitions="*,*">
+                    <ImageButton Source="scan.svg"/>
+                    <ImageButton Source="magnifying_glass.svg"
+                                 Grid.Column="1"
+                                 BackgroundColor="#EBEBEB"
+                                 Clicked="OnOpenSearchClicked"/>
+                </Grid>
+                <!--
+                    Image of the wall, with an overlay of the route.
+                    Buttons to tab between climbs
+                -->
+                <Border Margin="40"
+                            Grid.Row="1"
+                            Stroke="Black">
+                </Border>
+
+                <!--Submit wall choice/back buttons-->
+                <Grid Grid.Row="3"
+                      ColumnDefinitions="*,auto,30,auto,*">
+                    <VerticalStackLayout
+                        VerticalOptions="Center"
+                        Grid.Column="1">
+                        <Label Text="whoops?" 
+                               HorizontalOptions="Center"/>
+                        <Frame
+                            BorderColor="Black"
+                            CornerRadius="15"
+                            Padding="10">
+                            <ImageButton
+                                Source="left_arrow.svg"
+                                HeightRequest="30"
+                                WidthRequest="100"
+                                HorizontalOptions="Center"
+                                Clicked="OnDiscardChoiceClicked" />
+                        </Frame>
+                    </VerticalStackLayout>
+                    <ImageButton
+                        VerticalOptions="Center"
+                        Grid.Column="3"
+                        Padding="-2.5"
+                        WidthRequest="50"
+                        HeightRequest="50" 
+                        CornerRadius="30"
+                        Source="arrow_circle_right.svg" 
+                        Aspect="AspectFit"
+                        BackgroundColor="#CEFFA7"
+                        Clicked="OnSubmitWallChoiceClicked"/>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <!--
+            Second of two mini components
+            Search feature for available walls.
+        -->
+        <Border x:Name="Search"
+                IsVisible="False"
+                Grid.Row="1"
+                StrokeThickness="1"
+                Stroke="Black"
+                Margin="3"
+                Padding="0">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="5"/>
+            </Border.StrokeShape>
+            <Grid RowDefinitions="*,10*,3*">
+                <!--
+                    Control which wall selection option is active
+                -->
+                <Grid ColumnDefinitions="*,*">
+                    <ImageButton Source="scan.svg"
+                                 BackgroundColor="#EBEBEB"
+                                 Clicked="OnOpenScanClicked"/>
+                    <ImageButton Source="magnifying_glass.svg"
+                         Grid.Column="1"/>
+                </Grid>
+
+                <VerticalStackLayout Grid.Row="1">
+                    <Label Text="Enter wall ID:"/>
+                    <Entry x:Name="WallId" />
+                </VerticalStackLayout>
+
+                <!--Submit wall choice/back buttons-->
+                <Grid Grid.Row="3"
+              ColumnDefinitions="*,auto,30,auto,*">
+                    <VerticalStackLayout
+                VerticalOptions="Center"
+                Grid.Column="1">
+                        <Label Text="whoops?" 
+                       HorizontalOptions="Center"/>
+                        <Frame
+                    BorderColor="Black"
+                    CornerRadius="15"
+                    Padding="10">
+                            <ImageButton
+                        Source="left_arrow.svg"
+                        HeightRequest="30"
+                        WidthRequest="100"
+                        HorizontalOptions="Center"
+                        Clicked="OnDiscardChoiceClicked" />
+                        </Frame>
+                    </VerticalStackLayout>
+                    <ImageButton
+                VerticalOptions="Center"
+                Grid.Column="3"
+                Padding="-2.5"
+                WidthRequest="50"
+                HeightRequest="50" 
+                CornerRadius="30"
+                Source="arrow_circle_right.svg" 
+                Aspect="AspectFit"
+                BackgroundColor="#CEFFA7"
+                Clicked="OnSubmitWallChoiceClicked"/>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <!-- 'Switch account' overlay - deactivated by default-->
+        <ContentView x:Name="Overlay"
+                     Grid.RowSpan="1000"
+                     Grid.ColumnSpan="1000"
+                     BackgroundColor="#80000000"
+                     IsVisible="False">
+            <Frame HorizontalOptions="Center"   
+                   VerticalOptions="Center"
+                   WidthRequest="300"
+                   HeightRequest="200"
+                   BackgroundColor="White"
+                   Padding="20"
+                   CornerRadius="20">
+                <Grid HorizontalOptions="Center"
+                        RowDefinitions="*,2*,*,2*,*"
+                        VerticalOptions="Center"
+                        WidthRequest="300"
+                        HeightRequest="200"
+                        BackgroundColor="White"
+                        Padding="20">
+
+                    <!-- Text: tell the user what's what -->
+                    <Label Grid.Row="1"
+                                Text="Create an account to log climbs"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center"
+                                FontSize="18" />
+
+                    <!-- Buttons: either close popup, or return to login/signup -->
+                    <Grid Grid.Row="3"
+                          ColumnDefinitions="*,auto,30,auto,*">
+                        <VerticalStackLayout
+                            VerticalOptions="Center"
+                            Grid.Column="1">
+                            <Label Text="whoops?" 
+                                   HorizontalOptions="Center"/>
+                            <Frame
+                                BorderColor="Black"
+                                CornerRadius="15"
+                                Padding="10">
+                                <ImageButton
+                                    Source="left_arrow.svg"
+                                    HeightRequest="30"
+                                    WidthRequest="100"
+                                    HorizontalOptions="Center"
+                                    Clicked="OnCloseOverlayClicked" />
+                            </Frame>
+                        </VerticalStackLayout>
+                        <ImageButton
+                                VerticalOptions="Center"
+                                Grid.Column="3"
+                                Padding="-2.5"
+                                WidthRequest="50"
+                                HeightRequest="50" 
+                                CornerRadius="30"
+                                Source="arrow_circle_right.svg" 
+                                Aspect="AspectFit"
+                                BackgroundColor="#CEFFA7"
+                                Clicked="OnLoginClick"/>
+                    </Grid>
+                </Grid>
+            </Frame>
+        </ContentView>
+    </Grid>
+</ContentPage>

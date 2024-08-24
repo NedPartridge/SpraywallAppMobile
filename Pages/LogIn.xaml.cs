@@ -1,14 +1,18 @@
+using SpraywallAppMobile.Models;
+using System.Security.Cryptography;
+
 namespace SpraywallAppMobile.Pages;
 
 
 // Code behind class for the login page
 public partial class LogIn : ContentPage
 {
+
     // Initialise the component - only applicable to certain deployment platforms.
 	public LogIn()
 	{
 		InitializeComponent();
-	}
+    }
 
     // Exit the login screen, go back to the signup/login choice 
     // Do NOT set the currently logged in user.
@@ -25,5 +29,4 @@ public partial class LogIn : ContentPage
         // Encrypt 'password' text, send post reqq to API
         // Blocked by: No api yet :/
     }
-
 }
