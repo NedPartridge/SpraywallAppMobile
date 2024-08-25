@@ -10,7 +10,7 @@
                 Aspect="AspectFill"/>
         <Grid RowDefinitions="*, 2*, *, *, *, 2*, *, 2*">
             <Label 
-                    Text="Log in"
+                    Text="Sign up"
                     VerticalOptions="Center" 
                     HorizontalOptions="Center" 
                     FontSize="20"/>
@@ -29,29 +29,24 @@
                 <Entry IsPassword="True" x:Name="password"/>
             </VerticalStackLayout>
 
-            <HorizontalStackLayout Spacing="40" Grid.Row="6" HorizontalOptions="Center" VerticalOptions="Center">
+            
+            <!--Buttons-->
+            <Grid ColumnDefinitions="4*,*,2*,*,4*" 
+                                   Grid.Row="6" 
+                                   HorizontalOptions="Center" 
+                                   VerticalOptions="Center">
                 <!--Back button-->
-                <Frame
-                        Padding="10, 20, 10, 20"
-                        BorderColor="Black"
-                        VerticalOptions="Center">
-                    <Frame.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnBackButtonClicked"/>
-                    </Frame.GestureRecognizers>
-                    <Image MaximumWidthRequest="100" Source="left_arrow.svg" VerticalOptions="Start"/>
-                </Frame>
-    
+                <ImageButton Clicked="OnBackButtonClicked"
+                             Source="left_arrow.svg"
+                             MaximumWidthRequest="100"
+                             Grid.Column="1"/>
+
                 <!--Next button-->
-                <Frame
-                        Padding="0"
-                        BorderColor="Transparent"
-                        VerticalOptions="Center">
-                    <Frame.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnSubmitButtonClicked"/>
-                    </Frame.GestureRecognizers>
-                    <Image Source="next_circle_arrow.svg" VerticalOptions="Start"/>
-                </Frame>
-            </HorizontalStackLayout>
+                <ImageButton Clicked="OnSubmitButtonClicked"
+                             Source="next_circle_arrow.svg"
+                             MaximumWidthRequest="100"
+                             Grid.Column="3"/>
+            </Grid>
         </Grid>
     </Grid>
 </ContentPage>

@@ -1,5 +1,6 @@
 using SpraywallAppMobile.Helpers;
 using SpraywallAppMobile.Models;
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 
@@ -15,7 +16,7 @@ public partial class SignUp : ContentPage
 	}
 
     // Exit the sign up screen, go back to the signup/login choice
-    private async void OnBackButtonClicked(object sender, TappedEventArgs e)
+    private async void OnBackButtonClicked(object sender, EventArgs e)
     {
         // Cannot route directly to page: instead, 'step' 'back' one page
         await Shell.Current.GoToAsync("..");
@@ -24,42 +25,45 @@ public partial class SignUp : ContentPage
 
     // Create a new user account, based on the details provided
     // Authenticate locally first, submit request, handle responses
-    private async void OnSubmitButtonClicked(object sender, TappedEventArgs e)
+    private async void OnSubmitButtonClicked(object sender, EventArgs e)
     {
         // Validate data locally
-        if (email.Text == null || password.Text == null || name.Text == null) 
+        if (string.IsNullOrEmpty(email.Text) || string.IsNullOrEmpty(password.Text) || string.IsNullOrEmpty(name.Text))
         {
             await DisplayAlert("Invalid entry", "Please fill out all fields", "ok");
-            return; 
+            return;
         }
 
-        if(!IsValidPassword(password.Text))
+        if (!IsValidPassword(password.Text))
         {
             await DisplayAlert("Invalid password", "Must be between 6 and 20 characters\nMust use number, letters (upper & lower case), symbols", "ok");
             return;
         }
 
         // Encrypt the password, construct a user object
-        byte[] passwordArray = Encoding.UTF8.GetBytes(password.Text);
-        byte[] encryptedPassword = SecurityHelper.Encrypt(passwordArray);
-        string base64EncryptedString = Convert.ToBase64String(encryptedPassword);
-        UserToSignUp user = new() { Email = email.Text, Name = name.Text, Password = base64EncryptedString };
-        
-        // Serialise the user, attempt to create an account
-        StringContent jsonUser = new(JsonSerializer.Serialize(user));
-        HttpResponseMessage response = await httpClient.PostAsync(AppSettings.SignUpAddress, jsonUser);
+        byte[] encryptedBytesPassword = SecurityHelper.Encrypt(Encoding.UTF8.GetBytes(password.Text));
+        string encryptedBase64Password = Convert.ToBase64String(encryptedBytesPassword);
+        UserToSignUp user = new() { Email = email.Text, Name = name.Text, Password = encryptedBase64Password };
 
-        // If succesfull, set the token and go to the home page
-        if(response.IsSuccessStatusCode)
+
+        // Serialize the user, attempt to create an account
+        string jsonUser = JsonSerializer.Serialize(user);
+        StringContent content = new(jsonUser, Encoding.UTF8, "application/json");
+
+        HttpResponseMessage response = await httpClient.PostAsync(AppSettings.absSignUpAddress, content);
+
+        // If successful, set the token and go to the home page
+        if (response.IsSuccessStatusCode)
         {
-            AppSettings.Token = response.Content.ToString();
+            string responseBody = await response.Content.ReadAsStringAsync();
+            AppSettings.Token = responseBody;
             await Shell.Current.GoToAsync(nameof(Home));
         }
         // Respond to bad login details
         else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
         {
-            await DisplayAlert("Invalid sign up attempt", response.Content.ToString(), "ok");
-            return;
+            string errorMessage = await response.Content.ReadAsStringAsync();
+            await DisplayAlert("Invalid sign up attempt", errorMessage, "ok");
         }
         // Respond to other errors
         else
@@ -68,6 +72,7 @@ public partial class SignUp : ContentPage
             return;
         }
     }
+
 
     // Confirm password is valid - ie, not 'weak', or beyond storage capabilities
     // Done on frontend to save processing a bad password.

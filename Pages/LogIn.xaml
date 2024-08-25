@@ -25,29 +25,23 @@
             </VerticalStackLayout>
 
 
-            <HorizontalStackLayout Spacing="40" Grid.Row="5" HorizontalOptions="Center" VerticalOptions="Center">
-                <!--Back to 'main page' button-->
-                <Frame
-                        Padding="10, 20, 10, 20"
-                        BorderColor="Black"
-                        VerticalOptions="Center">
-                    <Frame.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnBackButtonClicked"/>
-                    </Frame.GestureRecognizers>
-                    <Image MaximumWidthRequest="100" Source="left_arrow.svg" VerticalOptions="Start"/>
-                </Frame>
+            <!--Buttons-->
+            <Grid ColumnDefinitions="4*,*,2*,*,4*" 
+                       Grid.Row="5" 
+                       HorizontalOptions="Center" 
+                       VerticalOptions="Center">
+                <!--Back button-->
+                <ImageButton Clicked="OnBackButtonClicked"
+                 Source="left_arrow.svg"
+                 MaximumWidthRequest="100"
+                 Grid.Column="1"/>
 
-                <!--Confirm log in button-->
-                <Frame
-                        Padding="0"
-                        BorderColor="Transparent"
-                        VerticalOptions="Center">
-                    <Frame.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnLoginButtonClicked"/>
-                    </Frame.GestureRecognizers>
-                    <Image Source="next_circle_arrow.svg" VerticalOptions="Start"/>
-                </Frame>
-            </HorizontalStackLayout>
+                <!--Next button-->
+                <ImageButton Clicked="OnLoginButtonClicked"
+                 Source="next_circle_arrow.svg"
+                 MaximumWidthRequest="100"
+                 Grid.Column="3"/>
+            </Grid>
         </Grid>
     </Grid>
 </ContentPage>

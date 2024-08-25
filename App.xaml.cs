@@ -1,42 +1,56 @@
 ﻿using SpraywallAppMobile.Models;
+using System.Diagnostics;
+using System.Net;
 
 namespace SpraywallAppMobile;
 
 public partial class App : Application
 {
+    // HttpClients should be reused where possible - as such, this one will
+    // be initialised in the App constructor, and serve for the full file.
+    private readonly HttpClient _client;
+    
+    // Initialise the application
     public App()
     {
+        _client = new HttpClient();
+
+        // Open the UI
         InitializeComponent();
+        MainPage = new AppShell();
 
-        // Initialize settings and then set MainPage
-        Task.Run(async () =>
-        {
-            await InitializeAppSettings();
-
-            // Ensure AppShell doesn't depend on public key initialization
-            MainPage = new AppShell();
-        }).Wait();
+        // Set appsettings variables
+        InitialiseAppSettings();
     }
 
-    // Initialize variables in AppSettings: Certain data (public keys, etc.) should be
-    // updated every time the app starts
-    private async Task InitializeAppSettings()
+    // Appsettings requires an httpget to initialise the public key variable
+    // This must be ran asynchronously, so it is separated from the main constructor
+    private async void InitialiseAppSettings()
     {
         try
         {
-            // Create a HttpClient to make web requests
-            using (var httpClient = new HttpClient())
-            {
-                // Fetch and set the public key
-                var response = await httpClient.GetStringAsync(AppSettings.RetrievePublicKeyAddress);
-                AppSettings.PublicKeyXML = response;
-                Console.WriteLine(response);
-            }
+            // Determine which platform's URL to use - android is quirky like that
+            string baseUrl;
+            if (DeviceInfo.Platform == DevicePlatform.Android)
+                baseUrl = AppSettings.AndroidBaseUrl;
+            else
+                baseUrl = AppSettings.DefaultBaseUrl;
+
+            // Initialise variable appsettings URLs
+            AppSettings.absRetrievePublicKeyAddress = new(baseUrl + AppSettings.RetrievePublicKeyAddress);
+            AppSettings.absSignUpAddress = new(baseUrl + AppSettings.SignUpAddress);
+            AppSettings.absLogInAddress = new(baseUrl + AppSettings.LogInAddress);
+
+            // Retrieve the public key
+            HttpResponseMessage response = await _client.GetAsync(AppSettings.absRetrievePublicKeyAddress);
+
+            // Update appsettings
+            string publicKeyXML = await response.Content.ReadAsStringAsync();
+            AppSettings.PublicKeyXML = publicKeyXML;
         }
-        catch (Exception ex)
-        {
-            // Handle exceptions (e.g., logging or user feedback)
-            Console.WriteLine($"Error setting app settings: {ex}");
-        }
+        // Errors will likely only occur if no wifi, or if server is down.
+        // If no wifi, system will alert user
+        // Server is expected to have 115% uptime, so the second possibility is, in fact, impossible.
+        catch (Exception ex) { Console.WriteLine(ex.Message); }
     }
 }

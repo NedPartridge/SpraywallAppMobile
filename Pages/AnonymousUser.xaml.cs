@@ -24,9 +24,6 @@ public partial class AnonymousUser : ContentPage
     }
 
 
-
-
-
     // Redirect user to the login/signup selection page 
     private async void OnLoginClick(object sender, EventArgs e)
     {
