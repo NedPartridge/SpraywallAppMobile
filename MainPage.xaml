@@ -67,7 +67,7 @@
                                HorizontalOptions="Start" 
                                Grid.Column="0"/>
 
-                        <Image Source="arrow_circle_right.svg"
+                        <Image Source="arrow_circle_right.png"
                                WidthRequest="30"
                                HeightRequest="30"
                                VerticalOptions="Center"
