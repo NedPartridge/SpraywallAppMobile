@@ -30,13 +30,13 @@ public partial class AnonymousUser : ContentPage
         Overlay.IsVisible = false;
 
         // Cannot route directly to page: instead, 'step' 'back' one page
-        await Shell.Current.GoToAsync("..");
+        await Shell.Current.GoToAsync("//" + nameof(LogIn));
     }
 
     // Redirect user to wall selection screen
     private async void OnSwitchWallClicked(object sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync(nameof(AnonymousSelectWall));
+        await Shell.Current.GoToAsync("//" + nameof(AnonymousSelectWall));
     }
 
     // Increment the number of attempts on the currently visible climb

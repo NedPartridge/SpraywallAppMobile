@@ -22,7 +22,7 @@ public partial class AnonymousSelectWall : ContentPage
     {
         Overlay.IsVisible = false;
 
-        await Shell.Current.GoToAsync(nameof(MainPage));
+        await Shell.Current.GoToAsync("//" + nameof(MainPage));
     }
 
 
@@ -47,13 +47,13 @@ public partial class AnonymousSelectWall : ContentPage
     // Called when user closes wall selection without making a choice
     private async void OnDiscardChoiceClicked(object sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync(nameof(AnonymousUser));
+        await Shell.Current.GoToAsync("//" + nameof(AnonymousUser));
     }
 
     // Send user back to anonymous home, after updating the wall selection
     private async void OnSubmitWallChoiceClicked(object sender, EventArgs e)
     {
         // TODO: update wall
-        await Shell.Current.GoToAsync(nameof(AnonymousUser));
+        await Shell.Current.GoToAsync("//" + nameof(AnonymousUser));
     }
 }

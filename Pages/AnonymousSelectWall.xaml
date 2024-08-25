@@ -172,62 +172,71 @@
                      Grid.ColumnSpan="1000"
                      BackgroundColor="#80000000"
                      IsVisible="False">
-            <Frame HorizontalOptions="Center"   
-                   VerticalOptions="Center"
-                   WidthRequest="300"
-                   HeightRequest="200"
-                   BackgroundColor="White"
-                   Padding="20"
-                   CornerRadius="20">
-                <Grid HorizontalOptions="Center"
-                        RowDefinitions="*,2*,*,2*,*"
-                        VerticalOptions="Center"
-                        WidthRequest="300"
-                        HeightRequest="200"
-                        BackgroundColor="White"
-                        Padding="20">
-
-                    <!-- Text: tell the user what's what -->
-                    <Label Grid.Row="1"
-                                Text="Create an account to log climbs"
-                                HorizontalOptions="Center"
-                                VerticalOptions="Center"
-                                FontSize="18" />
-
-                    <!-- Buttons: either close popup, or return to login/signup -->
-                    <Grid Grid.Row="3"
-                          ColumnDefinitions="*,auto,30,auto,*">
-                        <VerticalStackLayout
+            <Grid>
+                <!--
+                    Imagebutton required to prevent clicking behind the overlay
+                -->
+                <ImageButton Source="filler_image.jpg" 
+                             Opacity="0" 
+                             Aspect="AspectFill"
+                             InputTransparent="False"/>
+                <Frame HorizontalOptions="Center"   
+                       VerticalOptions="Center"
+                       WidthRequest="300"
+                       HeightRequest="200"
+                       BackgroundColor="White"
+                       Padding="20"
+                       CornerRadius="20">
+                    <Grid HorizontalOptions="Center"
+                            RowDefinitions="*,2*,*,2*,*"
                             VerticalOptions="Center"
-                            Grid.Column="1">
-                            <Label Text="whoops?" 
-                                   HorizontalOptions="Center"/>
-                            <Frame
-                                BorderColor="Black"
-                                CornerRadius="15"
-                                Padding="10">
-                                <ImageButton
-                                    Source="left_arrow.svg"
-                                    HeightRequest="30"
-                                    WidthRequest="100"
+                            WidthRequest="300"
+                            HeightRequest="200"
+                            BackgroundColor="White"
+                            Padding="20">
+
+                        <!-- Text: tell the user what's what -->
+                        <Label Grid.Row="1"
+                                    Text="Create an account to log climbs"
                                     HorizontalOptions="Center"
-                                    Clicked="OnCloseOverlayClicked" />
-                            </Frame>
-                        </VerticalStackLayout>
-                        <ImageButton
+                                    VerticalOptions="Center"
+                                    FontSize="18" />
+
+                        <!-- Buttons: either close popup, or return to login/signup -->
+                        <Grid Grid.Row="3"
+                                ColumnDefinitions="*,auto,30,auto,*">
+                            <VerticalStackLayout
                                 VerticalOptions="Center"
-                                Grid.Column="3"
-                                Padding="-2.5"
-                                WidthRequest="50"
-                                HeightRequest="50" 
-                                CornerRadius="30"
-                                Source="arrow_circle_right.svg" 
-                                Aspect="AspectFit"
-                                BackgroundColor="#CEFFA7"
-                                Clicked="OnLoginClick"/>
+                                Grid.Column="1">
+                                <Label Text="whoops?" 
+                                        HorizontalOptions="Center"/>
+                                <Frame
+                                    BorderColor="Black"
+                                    CornerRadius="15"
+                                    Padding="10">
+                                    <ImageButton
+                                        Source="left_arrow.svg"
+                                        HeightRequest="30"
+                                        WidthRequest="100"
+                                        HorizontalOptions="Center"
+                                        Clicked="OnCloseOverlayClicked" />
+                                </Frame>
+                            </VerticalStackLayout>
+                            <ImageButton
+                                    VerticalOptions="Center"
+                                    Grid.Column="3"
+                                    Padding="-2.5"
+                                    WidthRequest="50"
+                                    HeightRequest="50" 
+                                    CornerRadius="30"
+                                    Source="arrow_circle_right.svg" 
+                                    Aspect="AspectFit"
+                                    BackgroundColor="#CEFFA7"
+                                    Clicked="OnLoginClick"/>
+                        </Grid>
                     </Grid>
-                </Grid>
-            </Frame>
+                </Frame>
+            </Grid>
         </ContentView>
     </Grid>
 </ContentPage>

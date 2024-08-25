@@ -18,10 +18,18 @@ public partial class SignUp : ContentPage
     // Exit the sign up screen, go back to the signup/login choice
     private async void OnBackButtonClicked(object sender, EventArgs e)
     {
+        // Popup should be enabled to begin with
+        Overlay.IsVisible = true;
+
         // Cannot route directly to page: instead, 'step' 'back' one page
-        await Shell.Current.GoToAsync("..");
+        await Shell.Current.GoToAsync("//" + nameof(MainPage));
     }
 
+    // Data usage consent agreement signed, so close the popup
+    private async void OnConsent(object sender, EventArgs e)
+    {
+        Overlay.IsVisible = false;
+    }
 
     // Create a new user account, based on the details provided
     // Authenticate locally first, submit request, handle responses
@@ -57,7 +65,7 @@ public partial class SignUp : ContentPage
         {
             string responseBody = await response.Content.ReadAsStringAsync();
             AppSettings.Token = responseBody;
-            await Shell.Current.GoToAsync(nameof(Home));
+            await Shell.Current.GoToAsync("//" + nameof(Home));
         }
         // Respond to bad login details
         else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)

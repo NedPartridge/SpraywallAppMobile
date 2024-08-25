@@ -14,7 +14,7 @@
                     VerticalOptions="Center" 
                     HorizontalOptions="Center" 
                     FontSize="20"/>
-            
+
             <!--Create account input controls-->
             <VerticalStackLayout Padding="40" Grid.Row="2">
                 <Label Padding="10,0,0,0" Text="Name:"/>
@@ -29,7 +29,7 @@
                 <Entry IsPassword="True" x:Name="password"/>
             </VerticalStackLayout>
 
-            
+
             <!--Buttons-->
             <Grid ColumnDefinitions="4*,*,2*,*,4*" 
                                    Grid.Row="6" 
@@ -48,5 +48,54 @@
                              Grid.Column="3"/>
             </Grid>
         </Grid>
+
+        <!--
+            Data usage consent form
+        -->
+        <ContentView x:Name="Overlay"
+                     Grid.RowSpan="1000"
+                     Grid.ColumnSpan="1000"
+                     ZIndex="10"
+                     BackgroundColor="#80000000"
+                     IsVisible="True"
+                     InputTransparent="False">
+            <Grid>
+                <!--
+                    Imagebutton required to prevent clicking behind the overlay
+                -->
+                <ImageButton Source="filler_image.jpg" 
+                       Opacity="0" 
+                       Aspect="AspectFill"
+                       InputTransparent="False"/>
+                <Frame HorizontalOptions="Center"   
+                       VerticalOptions="Center"
+                       BackgroundColor="White"
+                       CornerRadius="20">
+                    <Grid HorizontalOptions="Center"
+                            RowDefinitions="*,0.5*,*,0.5*,2*"
+                            VerticalOptions="Center"
+                            WidthRequest="300"
+                            HeightRequest="270"
+                            BackgroundColor="White"
+                            Padding="20">
+                        <!-- Text: tell the user what's what -->
+                        <Label  Text="We WILL use your data"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center"
+                                FontSize="23" />
+                        <Label Grid.Row="2" 
+                               Text="By continuing, you consent to whatever we do with your stuff"
+                               HorizontalTextAlignment="Center"/>
+
+                        <!-- Buttons: either close popup, or return to login/signup -->
+                        <VerticalStackLayout Spacing="20" Grid.Row="4">
+                            <Button Text="I consent" BackgroundColor="Green" Clicked="OnConsent"/>
+                            <Button Text="I DO NOT consent" BackgroundColor="Red" Clicked="OnBackButtonClicked"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Frame>
+            </Grid>
+
+        </ContentView>
     </Grid>
 </ContentPage>

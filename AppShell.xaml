@@ -4,10 +4,26 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:SpraywallAppMobile"
+    xmlns:pages="clr-namespace:SpraywallAppMobile.Pages"
     Shell.FlyoutBehavior="Disabled"
     Title="SpraywallAppMobile">
 
-    <ShellContent
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    
+    <!-- 
+        Map relevant pages to routes
+        Route names to be based on page class names
+        Routes allow the pages to be called up from other places in the application
+    -->
+    
+    <!--
+    Main page is the landing, home page where you go after sign up/in 
+    -->
+    <ShellContent ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage" />
+    <ShellContent ContentTemplate="{DataTemplate pages:Home}" Route="Home" />
+
+    <ShellContent ContentTemplate="{DataTemplate pages:LogIn}" Route="LogIn" />
+    <ShellContent ContentTemplate="{DataTemplate pages:SignUp}" Route="SignUp" />
+    
+    <ShellContent ContentTemplate="{DataTemplate pages:AnonymousSelectWall}" Route="AnonymousSelectWall" />
+    <ShellContent ContentTemplate="{DataTemplate pages:AnonymousUser}" Route="AnonymousUser" />
 </Shell>

@@ -15,19 +15,19 @@ public partial class MainPage : ContentPage
     // Send user to account log in page
     private async void LogInButtonClicked(object sender, TappedEventArgs e)
     {
-        await Shell.Current.GoToAsync(nameof(LogIn));
+        await Shell.Current.GoToAsync("//" + nameof(LogIn));
     }
 
     // Send user to new account creation page
     private async void SignUpButtonClicked(object sender, TappedEventArgs e)
     {
-        await Shell.Current.GoToAsync(nameof(SignUp));
+        await Shell.Current.GoToAsync("//" + nameof(SignUp));
     }
 
     // 'Continue without signing in'
     // Access a page with limited functionality - no logging, no saving data, etc
     private async void AnonymousUserButtonClicked(object sender, TappedEventArgs e)
     {
-        await Shell.Current.GoToAsync(nameof(AnonymousSelectWall));
+        await Shell.Current.GoToAsync("//" + nameof(AnonymousSelectWall));
     }
 }
