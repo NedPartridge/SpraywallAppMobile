@@ -13,10 +13,8 @@ static class SecurityHelper
     {
         using (RSA rsaPublic = RSA.Create())
         {
-            // Import the public key
             rsaPublic.FromXmlString(AppSettings.PublicKeyXML);
-
-            return rsaPublic.Encrypt(data, RSAEncryptionPadding.OaepSHA256);
+            return rsaPublic.Encrypt(data, RSAEncryptionPadding.Pkcs1);
         }
     }
 }
