@@ -44,6 +44,10 @@ public partial class App : Application
             AppSettings.absRetrievePublicKeyAddress = new(baseUrl + AppSettings.RetrievePublicKeyAddress);
             AppSettings.absSignUpAddress = new(baseUrl + AppSettings.SignUpAddress);
             AppSettings.absLogInAddress = new(baseUrl + AppSettings.LogInAddress);
+            AppSettings.absGetWallAddress = new(baseUrl + AppSettings.GetWallAddress);
+            AppSettings.absGetSavedWallsAddress = new(baseUrl + AppSettings.GetSavedWallsAddress);
+            AppSettings.absSaveWallAddress = new(baseUrl + AppSettings.SaveWallAddress);
+
             // Retrieve the public key
             HttpResponseMessage response = await _client.GetAsync(AppSettings.absRetrievePublicKeyAddress);
             // Update appsettings

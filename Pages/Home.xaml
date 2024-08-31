@@ -2,16 +2,195 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SpraywallAppMobile.Pages.Home"
-             Title="Home">
+             Title="Home"
+             Shell.NavBarIsVisible="False">
     <!--
         Application home page, supporting all major functionality
         Only accessible after a succesful login/sign up, all web requests are 
         provided with authentication from that step.
     -->
-    <VerticalStackLayout>
-        <Label 
-            Text="Home page ~"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+    <Grid RowDefinitions="*, 4*">
+        <Button Text="logout"
+                Padding="10,0,10,0"
+                Margin="10"
+                BorderColor="Grey"
+                BorderWidth="1"
+                BackgroundColor="White"
+                TextColor="Black"
+                HorizontalOptions="Start"
+                VerticalOptions="Start"
+                Clicked="OnLogoutClicked"/>
+        <Label Text="Spraywall App"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
+               FontSize="40"/>
+        <!--
+            Page's primary content
+            Entry point for all other operations
+        -->
+        <Border Grid.Row="1"
+                StrokeThickness="1"
+                Stroke="Black"
+                Margin="3"
+                Padding="0">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="5"/>
+            </Border.StrokeShape>
+            <Grid RowDefinitions="*,10*,6*">
+                <!--Title text and change wall button-->
+                <Grid Padding="10">
+                    <Label x:Name="WallTitle" 
+                           Text="FillerWall" 
+                           HorizontalOptions="StartAndExpand"/>
+                    <ImageButton Source="switch_wall.svg"
+                                 HorizontalOptions="End"
+                                 HeightRequest="30"
+                                 WidthRequest="30"
+                                 Clicked="OnOpenWallSelectOverlayClicked"/>
+                </Grid>
+                <!--
+                    Image of the wall, with an overlay of the route.
+                    Buttons to tab between climbs
+                -->
+                <Border Grid.Row="1" 
+                        Stroke="Black"
+                        Padding="0">
+                    <Image Source="filler_image.jpg"
+                           Aspect="AspectFill"
+                           x:Name="WallImage"/>
+                </Border>
+
+                <!--
+                    Route details
+                    Updated when the climb changes (ie tab increment/decrement)
+                -->
+                <Grid RowDefinitions="*,*,*,*,2*,*" Grid.Row="2" Padding="5">
+                    <Label x:Name="ClimbName" 
+                            Text="*climb name*" 
+                            FontSize="24"
+                            VerticalOptions="Center"/>
+                    <Label x:Name="ClimbGrade" 
+                            Text="*climb grade*" 
+                            Grid.Row="1"
+                            VerticalOptions="Center"/>
+                    <Label x:Name="ClimbSetter" 
+                            Text="*setter name*" 
+                            Grid.Row="2"
+                            VerticalOptions="Center"/>
+
+                    <!--Attempts controls: increment/decrement, and running total-->
+                    <HorizontalStackLayout
+                                        VerticalOptions="Center"
+                                        Spacing="10"
+                                        Grid.Row="3">
+                        <Label Text="My attemps:"
+                                VerticalOptions="Center"/>
+                        <ImageButton 
+                            Source="minus.svg"
+                            BackgroundColor="Transparent"
+                            Padding="0"
+                            BorderColor="Black" 
+                            BorderWidth="1" 
+                            HeightRequest="30"
+                            WidthRequest="30"
+                            CornerRadius="3"
+                            VerticalOptions="Center"
+                            Aspect="AspectFill"
+                            Clicked="DecrementAttempts"/>
+                        <Label x:Name="ClimbAttempts" 
+                            Text="#"
+                            VerticalOptions="Center"/>
+                        <ImageButton 
+                            Source="plus.svg"
+                            BackgroundColor="Transparent"
+                            Padding="0"
+                            BorderColor="Black" 
+                            BorderWidth="1" 
+                            HeightRequest="30"
+                            WidthRequest="30"
+                            CornerRadius="3"
+                            VerticalOptions="Center"
+                            Aspect="AspectFill"
+                            Clicked="IncrementAttempts"/>
+                    </HorizontalStackLayout>
+
+
+                    <!--
+                        On the main page, these act as 'flag' and 'log'
+                        Since the use is signed out, instead simply prompt them to sign in.
+                    -->
+                    <Grid Grid.Row="5" ColumnDefinitions="6*,*,*">
+                        <ImageButton Source="alert_triangle.svg" 
+                                     Padding="0"
+                                     Grid.Column="1"/>
+                        <ImageButton Source="file_checkmark.svg" 
+                                     Padding="0"
+                                     Grid.Column="2"/>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <!--
+            Wall select overlay - which wall to display
+        -->
+        <ContentView x:Name="WallSelectOverlay"
+                     Grid.RowSpan="1000"
+                     Grid.ColumnSpan="1000"
+                     ZIndex="10"
+                     BackgroundColor="#80000000"
+                     IsVisible="False"
+                     WidthRequest="300"
+                     HeightRequest="400"
+                     InputTransparent="False">
+            <Grid BackgroundColor="White"
+                  VerticalOptions="Center"
+                  HorizontalOptions="Center"
+                  Padding="20" 
+                  RowDefinitions="*,4*,*">
+                <Label Text="Select a wall"
+                       FontSize="25"
+                       HorizontalOptions="Center"/>
+                <Button Text="X"
+                        FontSize="25"
+                        HorizontalOptions="End"
+                        VerticalOptions="Start"
+                        BackgroundColor="Grey"
+                        Clicked="OnCloseWallSelectOverlayClicked"
+                        ZIndex="20"/>
+                <ListView x:Name="WallsListView"
+                          ZIndex="3"
+                          Grid.Row="1"
+                          ItemTapped="OnWallItemTapped">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Border Margin="10" 
+                                        BackgroundColor="LightGreen">
+                                    <Label Text="{Binding Name}" 
+                                           FontSize="15" 
+                                           VerticalOptions="Center"/>
+                                </Border>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <ImageButton Source="plus.svg"
+                             Grid.Row="2"
+                             Clicked="OnSwitchWallClicked"
+                             HorizontalOptions="Center"
+                             VerticalOptions="Center"
+                             BorderWidth="1"
+                             CornerRadius="15"
+                             BorderColor="Black"/>
+                <!--
+                    Imagebutton required to prevent clicking behind the overlay
+                -->
+                <ImageButton Source="filler_image.webp" 
+                             Opacity="0" 
+                             Aspect="AspectFill"
+                             InputTransparent="False"/>
+            </Grid>
+        </ContentView>
+    </Grid>
 </ContentPage>
