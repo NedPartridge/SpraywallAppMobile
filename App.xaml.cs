@@ -13,7 +13,11 @@ public partial class App : Application
     // Initialise the application
     public App()
     {
-        _client = new HttpClient();
+        var httpClientHandler = new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+        };
+        _client = new HttpClient(httpClientHandler);
 
         // Open the UI
         InitializeComponent();
@@ -40,10 +44,8 @@ public partial class App : Application
             AppSettings.absRetrievePublicKeyAddress = new(baseUrl + AppSettings.RetrievePublicKeyAddress);
             AppSettings.absSignUpAddress = new(baseUrl + AppSettings.SignUpAddress);
             AppSettings.absLogInAddress = new(baseUrl + AppSettings.LogInAddress);
-
             // Retrieve the public key
             HttpResponseMessage response = await _client.GetAsync(AppSettings.absRetrievePublicKeyAddress);
-
             // Update appsettings
             string publicKeyXML = await response.Content.ReadAsStringAsync();
             AppSettings.PublicKeyXML = publicKeyXML;
@@ -51,6 +53,6 @@ public partial class App : Application
         // Errors will likely only occur if no wifi, or if server is down.
         // If no wifi, system will alert user
         // Server is expected to have 115% uptime, so the second possibility is, in fact, impossible.
-        catch (Exception ex) { Console.WriteLine(ex.Message); }
+        catch (Exception ex) { Debug.WriteLine("Error: " + ex.Message); }
     }
 }

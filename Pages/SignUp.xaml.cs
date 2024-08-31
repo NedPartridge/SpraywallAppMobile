@@ -8,12 +8,18 @@ namespace SpraywallAppMobile.Pages;
 
 public partial class SignUp : ContentPage
 {
-    HttpClient httpClient = new HttpClient();
+    HttpClient httpClient;
     // Initialise the component - only applicable to certain deployment platforms.
     public SignUp()
 	{
 		InitializeComponent();
-	}
+        // Ignore SSL
+        var httpClientHandler = new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+        };
+        httpClient = new HttpClient(httpClientHandler);
+    }
 
     // Exit the sign up screen, go back to the signup/login choice
     private async void OnBackButtonClicked(object sender, EventArgs e)

@@ -1,5 +1,6 @@
 using SpraywallAppMobile.Helpers;
 using SpraywallAppMobile.Models;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 
@@ -9,12 +10,19 @@ namespace SpraywallAppMobile.Pages;
 // Code behind class for the login page
 public partial class LogIn : ContentPage
 {
-    HttpClient httpClient = new HttpClient();
+    HttpClient httpClient;
 
     // Initialise the component - only applicable to certain deployment platforms.
     public LogIn()
 	{
 		InitializeComponent();
+
+        // Ignore SSL
+        var httpClientHandler = new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+        };
+        httpClient = new HttpClient(httpClientHandler);
     }
 
     // Exit the login screen, go back to the signup/login choice 

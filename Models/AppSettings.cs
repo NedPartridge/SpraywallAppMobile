@@ -4,8 +4,8 @@
     static class AppSettings
     {
         // Since the server is locally deployed, the 'base' URL is different between platforms
-        public static readonly string AndroidBaseUrl = new("https://10.0.2.2:7167/");
-        public static readonly string DefaultBaseUrl = new("https://localhost:7167/");
+        public static readonly string AndroidBaseUrl = "https://10.0.2.2:7167/";
+        public static readonly string DefaultBaseUrl = "https://localhost:7167/";
 
         // API endpoint URLs
         public static readonly string RetrievePublicKeyAddress = "User/publickey";
