@@ -1,23 +1,23 @@
-using SpraywallAppMobile.Helpers;
+using SkiaSharp;
 using SpraywallAppMobile.Models;
+using SpraywallAppMobile.Helpers;
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using SkiaSharp;
 using SkiaSharp.Views.Maui.Controls;
 using SkiaSharp.Views.Maui;
-
+using System.Xml.Linq;
 
 namespace SpraywallAppMobile.Pages;
 
-public partial class Home : ContentPage
+// Page for setting new climbs
+public partial class SetClimb : ContentPage
 {
     // For web requests
     HttpClient client;
 
     // The current wall, and other available walls
     Wall wall;
-    List<WallDTO> walls = new List<WallDTO>();
 
     // The holds on this wall
     private List<SKRect> boundingBoxes = new List<SKRect>(); // for SkiaPaint functionality
@@ -26,41 +26,47 @@ public partial class Home : ContentPage
     // SkiaPaint version of the wall image
     private SKBitmap wallImage;
 
+    Climb climb = new Climb();
 
-    public Home()
+    public SetClimb()
 	{
 		InitializeComponent();
-        // Ignore SSL
+
+        // Ignore SSL, set auth headers
         var httpClientHandler = new HttpClientHandler
         {
             ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
         };
         client = new HttpClient(httpClientHandler);
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AppSettings.Token);
     }
+
 
     // Initialise the page, every time the page is accessed.
     protected async override void OnAppearing()
     {
         base.OnAppearing();
 
-        // Update wall list from server
-        await GetSavedWalls();
-
-        // If wall hasn't been set (ie, there is no wall selected), set it to the first item in the walls list
-        // Then, bind controls to the downloaded data
-        var wallToQuery = walls.FirstOrDefault();
-        if (wallToQuery == null) // If the user hasn't added any walls, direct them to do so
+        // Set user state
+        HttpResponseMessage response = await client.GetAsync(AppSettings.absGetUserAddress);
+        if (!response.IsSuccessStatusCode) // errors
+        {   await DisplayAlert("Error", "Unknown", "go home");
+            await Shell.Current.GoToAsync("//" + nameof(Home)); }
+        // Success!
+        string jsonResponse = await response.Content.ReadAsStringAsync();
+        // Deserialize the JSON response to an object using System.Text.Json
+        var user = JsonSerializer.Deserialize<RetrievedUser>(jsonResponse, new JsonSerializerOptions
         {
-            await Shell.Current.GoToAsync("//" + nameof(SelectWall));
-            return;
-        }
-        if (StateHelper.CurrentWallId == null) // If state hasn't been set, default.
-            await UpdateWallBindings(wallToQuery.Id);
+            PropertyNameCaseInsensitive = true
+        });
+        climb = new() { Name = null, Grade = 0, SetterName = user.Name};
+
+
+        // If state hasn't been set, go home
+        if (StateHelper.CurrentWallId == null)
+            await Shell.Current.GoToAsync("//" + nameof(Home));
         else // otherwise, use the provided id
             await UpdateWallBindings(Convert.ToInt32(StateHelper.CurrentWallId));
-
-        // Walls select content
-        WallsListView.ItemsSource = walls;
 
         // Load the wall image for skia
         LoadWallImage();
@@ -79,90 +85,52 @@ public partial class Home : ContentPage
         }
     }
 
-    // Update visual control bindings (not the image, that's skiasharp)
+    // Update visual control bindings (not the image)
     private async Task UpdateWallBindings(int id)
     {
         wall = await GetWall(id);
-        
-        if(wall == null) // If someone's tampering with code behind, redirect them
+
+        if (wall == null) // If someone's tampering with code behind, redirect them
         {
             await Shell.Current.GoToAsync("//" + nameof(SelectWall));
             return;
         }
-        StateHelper.CurrentWallId = id;  
+
         // wall data
         WallTitle.Text = wall.Name;
-    }
-
-    // Redirect user to the login/signup selection page 
-    private async void OnLogoutClicked(object sender, EventArgs e)
-    {
-        await Shell.Current.GoToAsync("//" + nameof(MainPage));
-    }
-
-    // Redirect user to wall selection screen
-    private async void OnSwitchWallClicked(object sender, EventArgs e)
-    {
-        await Shell.Current.GoToAsync("//" + nameof(SelectWall));
     }
 
     // Increment the number of attempts on the currently visible climb
     private async void IncrementAttempts(object sender, EventArgs e)
     {
-        Console.WriteLine("Attempts incremented");
+        if (climb.Grade < 15) // max grade v15
+            climb.Grade++;
+        ClimbAttempts.Text = $"v{climb.Grade}"; // Bind to display
     }
 
     // Decrement the number of attempts on the currently visible climb
     private async void DecrementAttempts(object sender, EventArgs e)
     {
-        Console.WriteLine("Attempts decremented");
+        if (climb.Grade > 0) // max grade v15
+            climb.Grade--;
+        ClimbAttempts.Text = $"v{climb.Grade}"; // Bind to display
     }
 
-    private async void OnOpenWallSelectOverlayClicked(object sender, EventArgs e)
-    {
-        WallSelectOverlay.IsVisible = true;
-    }
-    private async void OnCloseWallSelectOverlayClicked(object sender, EventArgs e)
-    {
-        WallSelectOverlay.IsVisible = false;
-    }
-
-    private async void NavigateToHome(object sender, EventArgs e)
+    // Discard all creation details, return to home
+    private async void DiscardChanges(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync("//" + nameof(Home));
     }
-    private async void NavigateToSettings(object sender, EventArgs e)
+    
+    // Given the inputs (through UI), save a climb to the server
+    private async void SaveClimb(object sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("//" + nameof(Settings));
-    }
-    private async void NavigateToLogbook(object sender, EventArgs e)
-    {
-        await Shell.Current.GoToAsync("//" + nameof(Logbook));
-    }
-
-    private async void OnSetClimbClicked(object sender, EventArgs e)
-    {
-        await Shell.Current.GoToAsync("//" + nameof(SetClimb));
-    }
-
-
-
-    // Change the wall the home page is displaying
-    private async void OnWallItemTapped(object sender, ItemTappedEventArgs e)
-    {
-        // Convert tapped event arguments into a helpful format (walldto)
-        if (e.Item is WallDTO tappedWall)
+        // Validate it's a climb - no nulls, etc
+        if(string.IsNullOrEmpty(ClimbName.Text))
         {
-            await UpdateWallBindings(tappedWall.Id);
-            StateHelper.CurrentWallId = tappedWall.Id;
+            await DisplayAlert("Invalid climb", "Name must not be null", "ok");
+            return;
         }
-        // Load the wall image for skia
-        LoadWallImage();
-        // Load the holds for the current wall
-        LoadBoundingBoxes();
-
-        // Disable popup
-        WallSelectOverlay.IsVisible = false;
     }
 
     // Retrieve a wall from the webserver, and store it's data
@@ -189,14 +157,14 @@ public partial class Home : ContentPage
                 // Download the Image - stored at the one address, more than one wall image
                 // is never needed, and hence, should never be stored.
                 string imageBase64 = root.GetProperty("image").GetString();
-                byte[] imageBytes = Convert.FromBase64String(imageBase64); 
+                byte[] imageBytes = Convert.FromBase64String(imageBase64);
                 string imagePath = Path.Combine(FileSystem.AppDataDirectory, "wall_image.webp");
                 await File.WriteAllBytesAsync(imagePath, imageBytes);
 
                 // Read and save the JSON file content
                 string jsonFileContent = root.GetProperty("jsonFile").GetString();
                 string jsonFilePath = Path.Combine(FileSystem.AppDataDirectory, "holds.json");
-                if (File.Exists(jsonFilePath))
+                if(File.Exists(jsonFilePath))
                     File.Delete(jsonFilePath);
                 await File.WriteAllTextAsync(jsonFilePath, jsonFileContent);
 
@@ -217,20 +185,6 @@ public partial class Home : ContentPage
                 await DisplayAlert("Something went wrong", "We don't know what, please try again later", "ok");
             return null;
         }
-    }
-
-    // Retrieve the list of walls the user has accessed
-    private async Task GetSavedWalls()
-    {
-        try
-        {
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AppSettings.Token);
-            HttpResponseMessage response = await client.GetAsync(AppSettings.absGetSavedWallsAddress);
-            string jsonWalls = await response.Content.ReadAsStringAsync();
-            // Deserialise the list of walls, for use in future requests
-            walls = JsonSerializer.Deserialize<List<WallDTO>>(jsonWalls);
-        }
-        catch (Exception ex) { await DisplayAlert("Error", "Check connection", "ok"); }
     }
 
     // Climb management
@@ -309,7 +263,7 @@ public partial class Home : ContentPage
     // Call this method after loading the JSON data
     private void LoadBoundingBoxes()
     {
-        // Example to parse and add bounding boxes from JSON
+        // Parse and add bounding boxes from JSON
         string jsonFilePath = Path.Combine(FileSystem.AppDataDirectory, "holds.json");
         string json = File.ReadAllText(jsonFilePath);
         HoldData.Clear();

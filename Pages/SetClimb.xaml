@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SpraywallAppMobile.Pages.SetClimb"
+             Title="SetClimb"
+             xmlns:skia="clr-namespace:SkiaSharp.Views.Maui.Controls;assembly=SkiaSharp.Views.Maui.Controls"
+             Shell.NavBarIsVisible="False">
+    <!--
+        Page for setting a new climb
+        Allows hold selection, and route customization
+    -->
+    <Grid RowDefinitions="*, 4*,0.6*">
+        <Label Text="Setting new climb"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
+               FontSize="40"/>
+        <!--
+            Page's primary content
+            Entry point for all other operations
+        -->
+        <Border Grid.Row="1"
+                StrokeThickness="1"
+                Stroke="Black"
+                Margin="3"
+                Padding="0">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="5"/>
+            </Border.StrokeShape>
+            <Grid RowDefinitions="*,10*,6*">
+                <!--Title text and change wall button-->
+                <Grid Padding="5,0,5,0">
+                    <Label x:Name="WallTitle" 
+                           Text="FillerWall" 
+                           HorizontalOptions="StartAndExpand"
+                           VerticalOptions="Center"/>
+                </Grid>
+                <!--
+                    Image of the wall, with an overlay of the route.
+                    Buttons to tab between climbs
+                -->
+                <Border Grid.Row="1" 
+                        Stroke="Black"
+                        Padding="0">
+                    <Grid>
+                        <!--
+                            SkiaSharp canvas draws the wall image, and the hold bounding boxes over the top.
+                            Very groovy
+                        -->
+                        <skia:SKCanvasView x:Name="WallCanvas"
+                                           PaintSurface="OnCanvasPaintSurface" />
+                    </Grid>
+                </Border>
+
+                <!--
+                    Route details
+                    Updated when the climb changes (ie tab increment/decrement)
+                -->
+                <Grid RowDefinitions="*,*,*" Grid.Row="2" Padding="5">
+                    <Entry x:Name="ClimbName" 
+                            Text="*climb name*"
+                            FontSize="24"
+                            VerticalOptions="Center"/>
+                    <Entry x:Name="ClimbGrade" 
+                            Text="*climb grade*" 
+                            Grid.Row="1"
+                            VerticalOptions="Center"/>
+
+                    <!--Attempts controls: increment/decrement, and running total-->
+                    <HorizontalStackLayout
+                                        VerticalOptions="Center"
+                                        Spacing="10"
+                                        Grid.Row="2">
+                        <Label Text="My attemps:"
+                                VerticalOptions="Center"/>
+                        <ImageButton 
+                            Source="minus.svg"
+                            BackgroundColor="Transparent"
+                            Padding="0"
+                            BorderColor="Black" 
+                            BorderWidth="1" 
+                            HeightRequest="30"
+                            WidthRequest="30"
+                            CornerRadius="3"
+                            VerticalOptions="Center"
+                            Aspect="AspectFill"
+                            Clicked="DecrementAttempts"/>
+                        <Label x:Name="ClimbAttempts" 
+                            Text="v0"
+                            VerticalOptions="Center"/>
+                        <ImageButton 
+                            Source="plus.svg"
+                            BackgroundColor="Transparent"
+                            Padding="0"
+                            BorderColor="Black" 
+                            BorderWidth="1" 
+                            HeightRequest="30"
+                            WidthRequest="30"
+                            CornerRadius="3"
+                            VerticalOptions="Center"
+                            Aspect="AspectFill"
+                            Clicked="IncrementAttempts"/>
+                    </HorizontalStackLayout>
+                </Grid>
+            </Grid>
+        </Border>
+        <Grid Grid.Row="2"
+          Padding="30">
+            <ImageButton Source="save.svg"
+                     Clicked="DiscardChanges"
+                     HorizontalOptions="StartAndExpand"
+                     VerticalOptions="Center"
+                     WidthRequest="60"
+                     HeightRequest="65"
+                     CornerRadius="10"
+                     BackgroundColor="Red"/>
+            <ImageButton Source="trash.svg"
+                     Clicked="SaveClimb"
+                     HorizontalOptions="End"
+                     VerticalOptions="Center"
+                     BackgroundColor="Green"
+                     WidthRequest="60"
+                     HeightRequest="65"
+                     CornerRadius="10"/>
+        </Grid>
+    </Grid>
+</ContentPage>

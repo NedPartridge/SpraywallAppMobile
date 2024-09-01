@@ -44,11 +44,18 @@
                            Text="FillerWall" 
                            HorizontalOptions="StartAndExpand"
                            VerticalOptions="Center"/>
-                    <ImageButton Source="switch_wall.svg"
-                                 HorizontalOptions="End"
-                                 HeightRequest="30"
-                                 WidthRequest="30"
-                                 Clicked="OnOpenWallSelectOverlayClicked"/>
+                    <Grid HorizontalOptions="End"
+                          ColumnDefinitions="auto,auto">
+                        <ImageButton Source="switch_wall.svg"
+                             HeightRequest="30"
+                             WidthRequest="30"
+                             Clicked="OnOpenWallSelectOverlayClicked"
+                                     Grid.Column="1"/>
+                        <ImageButton Source="plus.svg"
+                                     HeightRequest="30"
+                                     WidthRequest="30"
+                                     Clicked="OnSetClimbClicked"/>
+                    </Grid>
                 </Grid>
                 <!--
                     Image of the wall, with an overlay of the route.
@@ -58,13 +65,6 @@
                         Stroke="Black"
                         Padding="0">
                     <Grid>
-                        <!--
-                            The image doesn't actually do much, it's drawn over by the canvas
-                        -->
-                        <Image Source="filler_image.jpg"
-                           Aspect="AspectFill"
-                           x:Name="WallImage"/>
-                        
                         <!--
                             SkiaSharp canvas draws the wall image, and the hold bounding boxes over the top.
                             Very groovy
