@@ -1,19 +1,33 @@
 using SpraywallAppMobile.Helpers;
 using SpraywallAppMobile.Models;
 using System.Diagnostics;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using SkiaSharp;
+using SkiaSharp.Views.Maui.Controls;
+using SkiaSharp.Views.Maui;
+
 
 namespace SpraywallAppMobile.Pages;
 
 public partial class Home : ContentPage
 {
+    // For web requests
     HttpClient client;
+
+    // The current wall, and other available walls
     Wall wall;
     List<WallDTO> walls = new List<WallDTO>();
 
-	public Home()
+    // The holds on this wall
+    private List<SKRect> boundingBoxes = new List<SKRect>(); // for SkiaPaint functionality
+    List<Hold> HoldData;
+
+    // SkiaPaint version of the wall image
+    private SKBitmap wallImage;
+
+
+    public Home()
 	{
 		InitializeComponent();
         // Ignore SSL
@@ -43,16 +57,40 @@ public partial class Home : ContentPage
         if (StateHelper.CurrentWallId == null) // If state hasn't been set, default.
             await UpdateWallBindings(wallToQuery.Id);
         else // otherwise, use the provided id
-            await UpdateWallBindings(StateHelper.CurrentWallId);
+            await UpdateWallBindings(Convert.ToInt32(StateHelper.CurrentWallId));
 
         // Walls select content
         WallsListView.ItemsSource = walls;
+
+        // Load the wall image for skia
+        LoadWallImage();
+        // Load the holds for the current wall
+        LoadBoundingBoxes();
+    }
+    private void LoadWallImage()
+    {
+        // Assuming you have the path to the image file
+        var imagePath = Path.Combine(FileSystem.AppDataDirectory, "wall_image.webp");
+
+        // Load the image into an SKBitmap
+        using (var stream = File.OpenRead(imagePath))
+        {
+            wallImage = SKBitmap.Decode(stream);
+        }
     }
 
     // Update visual control bindings
     private async Task UpdateWallBindings(int id)
     {
         wall = await GetWall(id);
+        
+        if(wall == null) // If someone's tampering with code behind, redirect them
+        {
+            await Shell.Current.GoToAsync("//" + nameof(SelectWall));
+            return;
+        } 
+            
+
         WallImage.Source = ImageSource.FromFile(wall.ImagePath);
         WallTitle.Text = wall.Name;
     }
@@ -89,6 +127,22 @@ public partial class Home : ContentPage
     {
         WallSelectOverlay.IsVisible = false;
     }
+
+    private async void NavigateToHome(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("//" + nameof(Home));
+    }
+    private async void NavigateToSettings(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("//" + nameof(Settings));
+    }
+    private async void NavigateToLogbook(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("//" + nameof(Logbook));
+    }
+
+
+
 
     // Change the wall the home page is displaying
     private async void OnWallItemTapped(object sender, ItemTappedEventArgs e)
@@ -169,5 +223,100 @@ public partial class Home : ContentPage
             Debug.WriteLine("Wallcount: " + walls.Count());
         }
         catch (Exception ex) { await DisplayAlert("Error", "Check connection", "ok"); }
+    }
+
+
+
+
+    // Climb management
+
+
+    // Paint the holds over the image
+    // Uses the SkiaSharp library
+    // https://github.com/mono/SkiaSharp
+    private void OnCanvasPaintSurface(object sender, SKPaintSurfaceEventArgs e)
+    {
+        var canvas = e.Surface.Canvas;
+        var info = e.Info;
+
+        // Clear the canvas
+        canvas.Clear(SKColors.White);
+
+        if (wallImage == null || boundingBoxes == null || boundingBoxes.Count == 0)
+            return;
+
+        // Calculate the aspect ratios
+        float imageWidth = wallImage.Width;
+        float imageHeight = wallImage.Height;
+        float canvasWidth = info.Width;
+        float canvasHeight = info.Height;
+
+        float imageAspectRatio = imageWidth / imageHeight;
+        float canvasAspectRatio = canvasWidth / canvasHeight;
+
+        // Calculate the scaling factors
+        float scaleX, scaleY;
+        if (imageAspectRatio > canvasAspectRatio)
+        {
+            // Image is wider than the canvas
+            scaleX = canvasWidth / imageWidth;
+            scaleY = scaleX; // Maintain aspect ratio
+        }
+        else
+        {
+            // Image is taller or equal aspect ratio to canvas
+            scaleY = canvasHeight / imageHeight;
+            scaleX = scaleY; // Maintain aspect ratio
+        }
+
+        // Calculate the offset to center the image
+        float offsetX = (canvasWidth - imageWidth * scaleX) / 2;
+        float offsetY = (canvasHeight - imageHeight * scaleY) / 2;
+
+        // Draw the wall image
+        using (var paint = new SKPaint())
+        {
+            canvas.DrawBitmap(wallImage, new SKRect(offsetX, offsetY, offsetX + imageWidth * scaleX, offsetY + imageHeight * scaleY), paint);
+        }
+
+        // Define the paint for the bounding boxes
+        var boxPaint = new SKPaint
+        {
+            Color = SKColors.Red,
+            Style = SKPaintStyle.Stroke,
+            StrokeWidth = 5
+        };
+
+        // Draw each bounding box
+        foreach (var box in boundingBoxes)
+        {
+            var scaledRect = new SKRect(
+                offsetX + box.Left * scaleX,
+                offsetY + box.Top * scaleY,
+                offsetX + box.Right * scaleX,
+                offsetY + box.Bottom * scaleY);
+
+            canvas.DrawRect(scaledRect, boxPaint);
+        }
+    }
+
+
+    // Call this method after loading the JSON data
+    private void LoadBoundingBoxes()
+    {
+        // Example to parse and add bounding boxes from JSON
+        string jsonFilePath = Path.Combine(FileSystem.AppDataDirectory, "holds.json");
+        string json = File.ReadAllText(jsonFilePath);
+        HoldData = JsonSerializer.Deserialize<List<Hold>>(json);
+
+        foreach (Hold box in HoldData)
+        {
+            boundingBoxes.Add(new SKRect(box.X1, box.Y1, box.X2, box.Y2));
+        }
+
+        Debug.WriteLine(HoldData.Count());
+        // Invalidate the canvas to redraw with the bounding boxes
+        WallCanvas.InvalidateSurface();
+        Debug.WriteLine("Invalidate called");
     }
 }

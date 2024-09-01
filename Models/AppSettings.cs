@@ -13,6 +13,8 @@
         public static readonly string SignUpAddress = "User/signup";
         public static readonly string GetSavedWallsAddress = "User/getsavedwalls";
         public static readonly string SaveWallAddress = "User/savewall";
+        public static readonly string GetUserAddress = "User/getuser";
+        public static readonly string EditUserAddress = "User/edituser";
 
         public static readonly string GetWallAddress = "Walls/getwall";
 
@@ -23,6 +25,8 @@
         public static Uri absGetWallAddress { get; set; }
         public static Uri absSaveWallAddress { get; set; }
         public static Uri absGetSavedWallsAddress { get; set; }
+        public static Uri absGetUserAddress { get; set; }
+        public static Uri absEditUserAddress { get; set; }
 
 
 

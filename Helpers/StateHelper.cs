@@ -8,5 +8,5 @@ namespace SpraywallAppMobile.Helpers;
 public static class StateHelper
 {
     // Used to manage which wall is currently active
-    public static int CurrentWallId { get; set; }
+    public static int? CurrentWallId { get; set; } = null;
 }

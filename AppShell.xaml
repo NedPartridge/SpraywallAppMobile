@@ -21,6 +21,8 @@
     <ShellContent ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage" />
     <ShellContent ContentTemplate="{DataTemplate pages:Home}" Route="Home" />
     <ShellContent ContentTemplate="{DataTemplate pages:SelectWall}" Route="SelectWall" />
+    <ShellContent ContentTemplate="{DataTemplate pages:Settings}" Route="Settings" />
+    <ShellContent ContentTemplate="{DataTemplate pages:Logbook}" Route="Logbook" />
 
     <ShellContent ContentTemplate="{DataTemplate pages:LogIn}" Route="LogIn" />
     <ShellContent ContentTemplate="{DataTemplate pages:SignUp}" Route="SignUp" />

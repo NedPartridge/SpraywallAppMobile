@@ -3,13 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SpraywallAppMobile.Pages.Home"
              Title="Home"
+             xmlns:skia="clr-namespace:SkiaSharp.Views.Maui.Controls;assembly=SkiaSharp.Views.Maui.Controls"
              Shell.NavBarIsVisible="False">
     <!--
         Application home page, supporting all major functionality
         Only accessible after a succesful login/sign up, all web requests are 
         provided with authentication from that step.
     -->
-    <Grid RowDefinitions="*, 4*">
+    <Grid RowDefinitions="*, 4*,0.6*">
         <Button Text="logout"
                 Padding="10,0,10,0"
                 Margin="10"
@@ -38,10 +39,11 @@
             </Border.StrokeShape>
             <Grid RowDefinitions="*,10*,6*">
                 <!--Title text and change wall button-->
-                <Grid Padding="10">
+                <Grid Padding="5,0,5,0">
                     <Label x:Name="WallTitle" 
                            Text="FillerWall" 
-                           HorizontalOptions="StartAndExpand"/>
+                           HorizontalOptions="StartAndExpand"
+                           VerticalOptions="Center"/>
                     <ImageButton Source="switch_wall.svg"
                                  HorizontalOptions="End"
                                  HeightRequest="30"
@@ -55,9 +57,21 @@
                 <Border Grid.Row="1" 
                         Stroke="Black"
                         Padding="0">
-                    <Image Source="filler_image.jpg"
+                    <Grid>
+                        <!--
+                            The image doesn't actually do much, it's drawn over by the canvas
+                        -->
+                        <Image Source="filler_image.jpg"
                            Aspect="AspectFill"
                            x:Name="WallImage"/>
+                        
+                        <!--
+                            SkiaSharp canvas draws the wall image, and the hold bounding boxes over the top.
+                            Very groovy
+                        -->
+                        <skia:SKCanvasView x:Name="WallCanvas"
+                                           PaintSurface="OnCanvasPaintSurface" />
+                    </Grid>
                 </Border>
 
                 <!--
@@ -131,6 +145,31 @@
             </Grid>
         </Border>
 
+        
+        <!--
+            Navigation buttons, at the bottom of the screen
+        -->
+        <Grid ColumnDefinitions="*,*,*"
+              Grid.Row="2">
+            <ImageButton Source="logbook.svg"
+                         Clicked="NavigateToLogbook"
+                         BorderColor="Black"
+                         BorderWidth="1"
+                         Padding="5"/>
+            <ImageButton Source="home.svg"
+                         Grid.Column="1"
+                         Clicked="NavigateToHome"
+                         BackgroundColor="#F7FFF1"
+                         BorderColor="Black"
+                         BorderWidth="1"/>
+            <ImageButton Source="settings.svg"
+                         Grid.Column="2"
+                         Clicked="NavigateToSettings"
+                         BorderColor="Black"
+                         BorderWidth="1"/>
+        </Grid>
+        
+        
         <!--
             Wall select overlay - which wall to display
         -->
