@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SpraywallAppMobile.Pages;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,7 @@ namespace SpraywallAppMobile.Models;
 class Climb
 {
     // The holds that make up the climb
-    public List<Hold> Holds { get; set; } = new List<Hold>();
+    public List<SkiaHold> Holds { get; set; } = new();
 
     // Descriptive properties
     public string? Name { get; set; }

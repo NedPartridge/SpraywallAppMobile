@@ -49,6 +49,7 @@ public partial class App : Application
             AppSettings.absSaveWallAddress = new(baseUrl + AppSettings.SaveWallAddress);
             AppSettings.absGetUserAddress = new(baseUrl + AppSettings.GetUserAddress);
             AppSettings.absEditUserAddress = new(baseUrl + AppSettings.EditUserAddress);
+            AppSettings.absCreateClimbAddress = new(baseUrl + AppSettings.CreateClimbAddress);
 
             // Retrieve the public key
             HttpResponseMessage response = await _client.GetAsync(AppSettings.absRetrievePublicKeyAddress);

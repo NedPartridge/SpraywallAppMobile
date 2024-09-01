@@ -47,7 +47,10 @@
                             Very groovy
                         -->
                         <skia:SKCanvasView x:Name="WallCanvas"
-                                           PaintSurface="OnCanvasPaintSurface" />
+                                           PaintSurface="OnCanvasPaintSurface"
+                                           Touch="OnCanvasTouch"
+                                           EnableTouchEvents="True"
+                                           ZIndex="10"/>
                     </Grid>
                 </Border>
 
@@ -60,17 +63,46 @@
                             Text="*climb name*"
                             FontSize="24"
                             VerticalOptions="Center"/>
-                    <Entry x:Name="ClimbGrade" 
-                            Text="*climb grade*" 
-                            Grid.Row="1"
-                            VerticalOptions="Center"/>
-
+                    <!--Attempts controls: increment/decrement, and running total-->
+                    <HorizontalStackLayout VerticalOptions="Center"
+                                           Spacing="10"
+                                           Grid.Row="1">
+                        <Label Text="Grade:"
+                               VerticalOptions="Center"/>
+                        <ImageButton 
+                            Source="minus.svg"
+                            BackgroundColor="Transparent"
+                            Padding="0"
+                            BorderColor="Black" 
+                            BorderWidth="1" 
+                            HeightRequest="30"
+                            WidthRequest="30"
+                            CornerRadius="3"
+                            VerticalOptions="Center"
+                            Aspect="AspectFill"
+                            Clicked="DecrementGrade"/>
+                        <Label x:Name="ClimbGrade" 
+                               Text="v0"
+                               VerticalOptions="Center"/>
+                        <ImageButton 
+                               Source="plus.svg"
+                               BackgroundColor="Transparent"
+                               Padding="0"
+                               BorderColor="Black" 
+                               BorderWidth="1" 
+                               HeightRequest="30"
+                               WidthRequest="30"
+                               CornerRadius="3"
+                               VerticalOptions="Center"
+                               Aspect="AspectFill"
+                               Clicked="IncrementGrade"/>
+                    </HorizontalStackLayout>
                     <!--Attempts controls: increment/decrement, and running total-->
                     <HorizontalStackLayout
                                         VerticalOptions="Center"
                                         Spacing="10"
                                         Grid.Row="2">
-                        <Label Text="My attemps:"
+                        <Label Text="My attempts:"
                                 VerticalOptions="Center"/>
                         <ImageButton 
                             Source="minus.svg"
@@ -85,7 +117,7 @@
                             Aspect="AspectFill"
                             Clicked="DecrementAttempts"/>
                         <Label x:Name="ClimbAttempts" 
-                            Text="v0"
+                            Text="1"
                             VerticalOptions="Center"/>
                         <ImageButton 
                             Source="plus.svg"
