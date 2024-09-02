@@ -5,88 +5,14 @@
              Title="SelectWall"
              Shell.NavBarIsVisible="False">
     <!--
-        There are 2 ways to 'add' a wall: by qr code, by id/search
+        Add a wall to the user's saved walls
     -->
     <Grid RowDefinitions="*, 4*">
         <Label Text="Select Wall"
                HorizontalOptions="Center"
                VerticalOptions="Center"
                FontSize="40"/>
-        <!--
-        First of two mini components
-        QR code scanner, opens camera and identifies a wall.
-        -->
-        <Border x:Name="Scanner"
-            IsVisible="True"
-            Grid.Row="1"
-            StrokeThickness="1"
-            Stroke="Black"
-            Margin="3"
-            Padding="0">
-            <Border.StrokeShape>
-                <RoundRectangle CornerRadius="5"/>
-            </Border.StrokeShape>
-            <Grid RowDefinitions="*,10*,3*">
-                <!--
-                Control which wall selection option is active
-            -->
-                <Grid ColumnDefinitions="*,*">
-                    <ImageButton Source="scan.svg"/>
-                    <ImageButton Source="magnifying_glass.svg"
-                             Grid.Column="1"
-                             BackgroundColor="#EBEBEB"
-                             Clicked="OnOpenSearchClicked"/>
-                </Grid>
-                <!--
-                Image of the wall, with an overlay of the route.
-                Buttons to tab between climbs
-            -->
-                <Border Margin="40"
-                        Grid.Row="1"
-                        Stroke="Black">
-                </Border>
-
-                <!--Submit wall choice/back buttons-->
-                <Grid Grid.Row="3"
-                  ColumnDefinitions="*,auto,30,auto,*">
-                    <VerticalStackLayout
-                    VerticalOptions="Center"
-                    Grid.Column="1">
-                        <Label Text="whoops?" 
-                           HorizontalOptions="Center"/>
-                        <Frame
-                        BorderColor="Black"
-                        CornerRadius="15"
-                        Padding="10">
-                            <ImageButton
-                                    Source="left_arrow.svg"
-                                    HeightRequest="30"
-                                    WidthRequest="100"
-                                    HorizontalOptions="Center"
-                                    Clicked="OnDiscardChoiceClicked" />
-                        </Frame>
-                    </VerticalStackLayout>
-                    <ImageButton
-                    VerticalOptions="Center"
-                    Grid.Column="3"
-                    Padding="-2.5"
-                    WidthRequest="50"
-                    HeightRequest="50" 
-                    CornerRadius="30"
-                    Source="arrow_circle_right.svg" 
-                    Aspect="AspectFit"
-                    BackgroundColor="#CEFFA7"
-                    Clicked="OnSaveWallFromIdClicked"/>
-                </Grid>
-            </Grid>
-        </Border>
-
-        <!--
-        Second of two mini components
-        Search feature for available walls.
-    -->
         <Border x:Name="Search"
-            IsVisible="False"
             Grid.Row="1"
             StrokeThickness="1"
             Stroke="Black"
@@ -97,17 +23,11 @@
             </Border.StrokeShape>
             <Grid RowDefinitions="*,10*,3*">
                 <!--
-                Control which wall selection option is active
-            -->
-                <Grid ColumnDefinitions="*,*">
-                    <ImageButton Source="scan.svg"
-                             BackgroundColor="#EBEBEB"
-                             Clicked="OnOpenScanClicked"/>
-                    <ImageButton Source="magnifying_glass.svg"
-                     Grid.Column="1"/>
-                </Grid>
+                    Header Icon
+                -->
+                    <Image Source="magnifying_glass.svg"/>
 
-                <VerticalStackLayout Grid.Row="1"
+                    <VerticalStackLayout Grid.Row="1"
                                      Padding="20">
                     <Label Text="Enter wall ID:"/>
                     <Entry x:Name="WallId" />

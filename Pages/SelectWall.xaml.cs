@@ -18,20 +18,6 @@ public partial class SelectWall : ContentPage
         client = new HttpClient(httpClientHandler);
     }
 
-    // Open the search overlay
-    private void OnOpenSearchClicked(object sender, EventArgs e)
-    {
-        Scanner.IsVisible = false;
-        Search.IsVisible = true;
-    }
-
-    // Open the scan overlay
-    private void OnOpenScanClicked(object sender, EventArgs e)
-    {
-        Scanner.IsVisible = true;
-        Search.IsVisible = false;
-    }
-
 
     // Called when user closes wall selection without making a choice
     private async void OnDiscardChoiceClicked(object sender, EventArgs e)
