@@ -26,7 +26,14 @@ public partial class Home : ContentPage
     // SkiaPaint version of the wall image
     private SKBitmap wallImage;
 
+    // The available, and currently displayed, climb ids
+    List<int> climbIds = new List<int>();
+    int climbId;
+    int climbIndex = 0;
 
+    bool logged; // whether the climb has been logged
+
+    ClimbDto climb;
     public Home()
 	{
 		InitializeComponent();
@@ -65,7 +72,7 @@ public partial class Home : ContentPage
         // Load the wall image for skia
         LoadWallImage();
         // Load the holds for the current wall
-        LoadBoundingBoxes();
+        await LoadBoundingBoxes();
     }
     private void LoadWallImage()
     {
@@ -82,22 +89,38 @@ public partial class Home : ContentPage
     // Update visual control bindings (not the image, that's skiasharp)
     private async Task UpdateWallBindings(int id)
     {
+        climbIndex = 0;
         wall = await GetWall(id);
-        
-        if(wall == null) // If someone's tampering with code behind, redirect them
+
+        if (wall == null) // If someone's tampering with code behind, redirect them
         {
             await Shell.Current.GoToAsync("//" + nameof(SelectWall));
             return;
         }
-        StateHelper.CurrentWallId = id;  
+        // Set wall bindings
+        var response = await client.GetAsync(AppSettings.absGetClimbsAddress + $"/{id}");
+        climbIds = JsonSerializer.Deserialize<List<int>>(await response.Content.ReadAsStringAsync());
+        StateHelper.CurrentWallId = id;
+
+        // Set climb bindings: redirect if no climbs
+        if (climbIds == null | climbIds.Count() == 0)
+        {
+            await DisplayAlert("This walls has no climbs", "Add some", "ok");
+            await Shell.Current.GoToAsync("//" + nameof(SetClimb));
+            return;
+        }
+        climbId = climbIds[climbIndex];
         // wall data
         WallTitle.Text = wall.Name;
     }
 
-    // Redirect user to the login/signup selection page 
+    // Quit the app
+    // Maui has no easy way to erase page data, because it's crap
+    // Best solution? restart the app
     private async void OnLogoutClicked(object sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("//" + nameof(MainPage));
+        await DisplayAlert("Goodbye!", "", "bye?");
+        Application.Current.Quit();
     }
 
     // Redirect user to wall selection screen
@@ -106,18 +129,7 @@ public partial class Home : ContentPage
         await Shell.Current.GoToAsync("//" + nameof(SelectWall));
     }
 
-    // Increment the number of attempts on the currently visible climb
-    private async void IncrementAttempts(object sender, EventArgs e)
-    {
-        Console.WriteLine("Attempts incremented");
-    }
-
-    // Decrement the number of attempts on the currently visible climb
-    private async void DecrementAttempts(object sender, EventArgs e)
-    {
-        Console.WriteLine("Attempts decremented");
-    }
-
+    // Overlay management
     private async void OnOpenWallSelectOverlayClicked(object sender, EventArgs e)
     {
         WallSelectOverlay.IsVisible = true;
@@ -127,25 +139,57 @@ public partial class Home : ContentPage
         WallSelectOverlay.IsVisible = false;
     }
 
+    // Go home
     private async void NavigateToHome(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync("//" + nameof(Home));
     }
+    // Go to settings
     private async void NavigateToSettings(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync("//" + nameof(Settings));
     }
+    // Go to logbook
     private async void NavigateToLogbook(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync("//" + nameof(Logbook));
     }
 
+    // Go to set climb
     private async void OnSetClimbClicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync("//" + nameof(SetClimb));
     }
 
+    // Log a climb
+    private async void OnLogClimbClicked(object sender, EventArgs e)
+    {
+        if(logged)
+        {
+            await DisplayAlert("Climb already logged", "", "ok");
+            return;
+        }
+        var r = await client.GetAsync(AppSettings.absLogClimbAddress + $"/{climb.Id}/{climb.Attempts}");
+        await LoadBoundingBoxes();
+    }
 
+
+    // Increment the current climb
+    private async void NextClimbId(object sender, EventArgs e)
+    {
+        climbIndex++;
+        if (climbIndex == climbIds.Count()) // If at the end of the list, reset to 0
+            climbIndex = 0;
+        await LoadBoundingBoxes();
+    }
+    // Decrement the current climb
+    private async void LastClimbId(object sender, EventArgs e)
+    {
+        climbIndex--;
+        if (climbIndex == -1) // If at the start of the list, reset to the end
+            climbIndex = climbIds.Count()-1;
+        await LoadBoundingBoxes();
+    }
 
     // Change the wall the home page is displaying
     private async void OnWallItemTapped(object sender, ItemTappedEventArgs e)
@@ -159,10 +203,33 @@ public partial class Home : ContentPage
         // Load the wall image for skia
         LoadWallImage();
         // Load the holds for the current wall
-        LoadBoundingBoxes();
+        await LoadBoundingBoxes();
 
         // Disable popup
         WallSelectOverlay.IsVisible = false;
+    }
+
+    private void IncrementAttempts(object sender, EventArgs e)
+    {
+        climb.Attempts++;
+        ClimbAttempts.Text = climb.Attempts.ToString();
+    }
+
+    private void DecrementAttempts(object sender, EventArgs e)
+    {
+        if (climb.Attempts == 1)
+            return;
+        climb.Attempts--;
+        ClimbAttempts.Text = climb.Attempts.ToString();
+    }
+    private async void OnFlagClimbClicked(object sender, EventArgs e)
+    {
+        var response = await client.GetAsync(AppSettings.absFlagClimbAddress + $"/{climb.Id}");
+
+        if (!response.IsSuccessStatusCode)
+            await DisplayAlert("Something went wrong", "Try again later", "Ok");
+        else
+            await DisplayAlert("Climb flagged", "", "ok");
     }
 
     // Retrieve a wall from the webserver, and store it's data
@@ -306,16 +373,57 @@ public partial class Home : ContentPage
     }
 
 
-    // Call this method after loading the JSON data
-    private void LoadBoundingBoxes()
+    // Reload the climb data
+    private async Task LoadBoundingBoxes()
     {
-        // Example to parse and add bounding boxes from JSON
-        string jsonFilePath = Path.Combine(FileSystem.AppDataDirectory, "holds.json");
-        string json = File.ReadAllText(jsonFilePath);
+        // Clear data from previous gets/drawings
         HoldData.Clear();
         boundingBoxes.Clear();
-        HoldData = JsonSerializer.Deserialize<List<Hold>>(json);
 
+        climbId = climbIds[climbIndex];
+
+        // Retrieve the current climb
+        var response = await client.GetAsync(AppSettings.absGetClimbAddress + $"/{climbId}");
+        if (response.IsSuccessStatusCode)
+        {
+            climb = JsonSerializer.Deserialize<ClimbDto>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+            HoldData = JsonSerializer.Deserialize<List<Hold>>(climb.JsonHolds);
+            ClimbName.Text = climb.Name;
+            ClimbGrade.Text = $"v{climb.Grade}";
+            ClimbSetter.Text = climb.SetterName;
+
+            if(climb.Attempts == null)
+            {
+                logged = false;
+                climb.Attempts = 1;
+                // Enable climb logging
+                ClimbAttempts.Text = climb.Attempts.ToString();
+                AttemptsStatic.IsVisible = false;
+                AttemptsWrapper.IsVisible = true;
+                LogButton.IsVisible = true;
+            }
+            else
+            {
+                logged = true;
+                // Disable climb logging
+                // Just show attempts
+                AttemptsStatic.IsVisible = true;
+                AttemptsStatic.Text = "Attempts: " + climb.Attempts.ToString();
+                AttemptsWrapper.IsVisible = false;
+                LogButton.IsVisible = false;
+            }
+        }
+        else
+        {
+            await DisplayAlert("Something's wrong", "Come back later", "ok");
+            Application.Current.Quit();
+            return; 
+        }
+
+        // Make each hold in the climb available to draw
         foreach (Hold box in HoldData)
         {
             boundingBoxes.Add(new SKRect(box.X1, box.Y1, box.X2, box.Y2));

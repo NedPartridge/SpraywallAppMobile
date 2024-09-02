@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SpraywallAppMobile.Pages.AnonymousUser"
+             xmlns:skia="clr-namespace:SkiaSharp.Views.Maui.Controls;assembly=SkiaSharp.Views.Maui.Controls"
              Shell.NavBarIsVisible="False">
     <Grid RowDefinitions="*, 4*">
         <!--
@@ -40,16 +41,21 @@
             </Border.StrokeShape>
             <Grid RowDefinitions="*,10*,6*">
                 <!--Title text and change wall button-->
-                <HorizontalStackLayout Padding="10">
-                    <Label x:Name="WallName" 
+                <!--Title text and change wall button-->
+                <Grid Padding="5,0,5,0">
+                    <Label x:Name="WallTitle" 
                            Text="FillerWall" 
-                           HorizontalOptions="StartAndExpand"/>
-                    <ImageButton Source="switch_wall.svg"
-                                 HorizontalOptions="End"
-                                 HeightRequest="30"
-                                 WidthRequest="30"
-                                 Clicked="OnSwitchWallClicked"/>
-                </HorizontalStackLayout>
+                           HorizontalOptions="StartAndExpand"
+                           VerticalOptions="Center"/>
+                    <Grid HorizontalOptions="End"
+                          ColumnDefinitions="auto,auto">
+                        <ImageButton Source="switch_wall.svg"
+                                     HeightRequest="30"
+                                     WidthRequest="30"
+                                     Clicked="OnSwitchWallClicked"
+                                     Grid.Column="1"/>
+                    </Grid>
+                </Grid>
                 <!--
                     Image of the wall, with an overlay of the route.
                     Buttons to tab between climbs
@@ -57,15 +63,21 @@
                 <Border Grid.Row="1" 
                         Stroke="Black"
                         Padding="0">
-                    <Image Source="filler_image.jpg"
-                           Aspect="AspectFill"/>
+                    <Grid>
+                        <!--
+                            SkiaSharp canvas draws the wall image, and the hold bounding boxes over the top.
+                            Very groovy
+                        -->
+                        <skia:SKCanvasView x:Name="WallCanvas"
+                           PaintSurface="OnCanvasPaintSurface" />
+                    </Grid>
                 </Border>
-                
+
                 <!--
                     Route details
                     Updated when the climb changes (ie tab increment/decrement)
                 -->
-                <Grid RowDefinitions="*,*,*,*,2*,*" Grid.Row="2" Padding="5">
+                <Grid RowDefinitions="*,*,*,*,*,*" Grid.Row="2" Padding="5">
                     <Label x:Name="ClimbName" 
                             Text="*climb name*" 
                             FontSize="24"
@@ -115,12 +127,12 @@
                             Clicked="IncrementAttempts"/>
                     </HorizontalStackLayout>
 
-                    
+
                     <!--
                         On the main page, these act as 'flag' and 'log'
                         Since the use is signed out, instead simply prompt them to sign in.
                     -->
-                    <Grid Grid.Row="5" ColumnDefinitions="6*,*,*">
+                    <Grid Grid.Row="4" ColumnDefinitions="6*,*,*">
                         <ImageButton Source="alert_triangle.svg" 
                                      Padding="0"
                                      Grid.Column="1"
@@ -129,6 +141,28 @@
                                      Padding="0"
                                      Grid.Column="2"
                                      Clicked="OnOpenAccountOverlayClicked"/>
+                    </Grid>
+
+                    <!-- 
+                        Buttons to cycle thru climbs
+                    -->
+                    <Grid Grid.Row="5">
+                        <Button Text="back"
+                                Clicked="LastClimbId"
+                                HorizontalOptions="Start"
+                                BackgroundColor="White"
+                                TextColor="Black"
+                                Padding="0"
+                                BorderWidth="1"
+                                BorderColor="Black"/>
+                        <Button Text="next"
+                                Clicked="NextClimbId"
+                                HorizontalOptions="End"
+                                BackgroundColor="White"
+                                TextColor="Black"
+                                Padding="0"
+                                BorderWidth="1"
+                                BorderColor="Black"/>
                     </Grid>
                 </Grid>
             </Grid>

@@ -78,7 +78,7 @@
                     Route details
                     Updated when the climb changes (ie tab increment/decrement)
                 -->
-                <Grid RowDefinitions="*,*,*,*,2*,*" Grid.Row="2" Padding="5">
+                <Grid RowDefinitions="*,*,*,*,*,*" Grid.Row="2" Padding="5">
                     <Label x:Name="ClimbName" 
                             Text="*climb name*" 
                             FontSize="24"
@@ -91,13 +91,14 @@
                             Text="*setter name*" 
                             Grid.Row="2"
                             VerticalOptions="Center"/>
-
-                    <!--Attempts controls: increment/decrement, and running total-->
-                    <HorizontalStackLayout
-                                        VerticalOptions="Center"
-                                        Spacing="10"
-                                        Grid.Row="3">
-                        <Label Text="My attemps:"
+                    <Label x:Name="AttemptsStatic" 
+                           Text="Attempts: " 
+                           Grid.Row="3"
+                           VerticalOptions="Center"/>
+                    <HorizontalStackLayout x:Name="AttemptsWrapper"
+                                           Spacing="10"
+                                           Grid.Row="3">
+                        <Label Text="My attempts:"
                                 VerticalOptions="Center"/>
                         <ImageButton 
                             Source="minus.svg"
@@ -112,8 +113,9 @@
                             Aspect="AspectFill"
                             Clicked="DecrementAttempts"/>
                         <Label x:Name="ClimbAttempts" 
-                            Text="#"
-                            VerticalOptions="Center"/>
+                               IsVisible="True"
+                                Text="1"
+                                VerticalOptions="Center"/>
                         <ImageButton 
                             Source="plus.svg"
                             BackgroundColor="Transparent"
@@ -127,19 +129,41 @@
                             Aspect="AspectFill"
                             Clicked="IncrementAttempts"/>
                     </HorizontalStackLayout>
-
-
-                    <!--
-                        On the main page, these act as 'flag' and 'log'
-                        Since the use is signed out, instead simply prompt them to sign in.
+                        <!--
+                        'Flag' and 'log' buttons
                     -->
-                    <Grid Grid.Row="5" ColumnDefinitions="6*,*,*">
+                    <Grid Grid.Row="4" ColumnDefinitions="6*,*,*">
                         <ImageButton Source="alert_triangle.svg" 
                                      Padding="0"
-                                     Grid.Column="1"/>
+                                     Grid.Column="1"
+                                     x:Name="FlagButton"
+                                     Clicked="OnFlagClimbClicked"/>
                         <ImageButton Source="file_checkmark.svg" 
                                      Padding="0"
-                                     Grid.Column="2"/>
+                                     Grid.Column="2"
+                                     x:Name="LogButton"
+                                     Clicked="OnLogClimbClicked"/>
+                    </Grid>
+                    <!-- 
+                        Buttons to cycle thru climbs
+                    -->
+                    <Grid Grid.Row="5">
+                        <Button Text="back"
+                                Clicked="LastClimbId"
+                                HorizontalOptions="Start"
+                                BackgroundColor="White"
+                                TextColor="Black"
+                                Padding="0"
+                                BorderWidth="1"
+                                BorderColor="Black"/>
+                        <Button Text="next"
+                                Clicked="NextClimbId"
+                                HorizontalOptions="End"
+                                BackgroundColor="White"
+                                TextColor="Black"
+                                Padding="0"
+                                BorderWidth="1"
+                                BorderColor="Black"/>
                     </Grid>
                 </Grid>
             </Grid>

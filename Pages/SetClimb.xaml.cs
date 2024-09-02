@@ -156,6 +156,12 @@ public partial class SetClimb : ContentPage
         climbTC.Attempts = attempts;
         climbTC.Grade = climb.Grade;
         climbTC.JsonHolds = JsonSerializer.Serialize(selectedHolds); // Serialise the holds
+        // A climb must have holds
+        if(string.IsNullOrEmpty(climbTC.JsonHolds) | climbTC.JsonHolds == "[]") 
+        {
+            await DisplayAlert("Must select holds", "obviously", "ok");
+            return;
+        }
         string jsonClimb = JsonSerializer.Serialize(climbTC); // Serialise the climb
         StringContent content = new(jsonClimb, Encoding.UTF8, "application/json"); // Prepare the climb to be transferred
 

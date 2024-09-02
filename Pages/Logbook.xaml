@@ -2,11 +2,78 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SpraywallAppMobile.Pages.Logbook"
-             Title="Logbook">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="Logbook"
+             Shell.NavBarIsVisible="False">
+    <Grid RowDefinitions="*,4*,0.6*">
+        <VerticalStackLayout>
+            <Label Text="Logbook"
+                   HorizontalOptions="Center"
+                   FontSize="40"
+                   Padding="30"/>
+            <Label Text="Click a climb to view it's wall"
+                   HorizontalOptions="Center"
+                   TextColor="DarkGrey"
+                   FontAttributes="Italic"/>
+        </VerticalStackLayout>
+        <Border Margin="10"
+                Grid.Row="1">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="5"/>
+            </Border.StrokeShape>
+            <ListView x:Name="WallsListView"
+                      VerticalOptions="FillAndExpand"
+                      ItemTapped="OnClimbTapped"
+                      HasUnevenRows="True">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Border Margin="10"
+                                    VerticalOptions="FillAndExpand">
+                                <VerticalStackLayout Spacing="10"
+                                         Padding="10"
+                                         VerticalOptions="FillAndExpand">
+                                    <HorizontalStackLayout>
+                                        <Label Text="Climb name: "/>
+                                        <Label Text="{Binding Name}"
+                                               FontSize="15"
+                                               VerticalOptions="Center"/>
+                                    </HorizontalStackLayout>
+                                    <HorizontalStackLayout>
+                                        <Label Text="Wall name: "/>
+                                        <Label Text="{Binding WallName}"
+                                               FontSize="15"
+                                               VerticalOptions="Center"/>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                            </Border>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+        </Border>
+        <!--
+            Navigation buttons, at the bottom of the screen
+        -->
+        <Grid ColumnDefinitions="*,*,*"
+              Grid.Row="2">
+            <ImageButton Source="logbook.svg"
+                         Clicked="NavigateToLogbook"
+                         BorderColor="Black"
+                         BackgroundColor="#F7FFF1"
+                         BorderWidth="1"
+                         Padding="5"/>
+            <ImageButton Source="home.svg"
+                         Grid.Column="1"
+                         Clicked="NavigateToHome"
+                         BorderColor="Black"
+                         BorderWidth="1"/>
+            <ImageButton Source="settings.svg"
+                         Grid.Column="2"
+                         Clicked="NavigateToSettings"
+                         BorderColor="Black"
+                         BorderWidth="1"/>
+        </Grid>
+
+    </Grid>
 </ContentPage>

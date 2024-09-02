@@ -59,11 +59,11 @@
                         CornerRadius="15"
                         Padding="10">
                             <ImageButton
-                            Source="left_arrow.svg"
-                            HeightRequest="30"
-                            WidthRequest="100"
-                            HorizontalOptions="Center"
-                            Clicked="OnDiscardChoiceClicked" />
+                                    Source="left_arrow.svg"
+                                    HeightRequest="30"
+                                    WidthRequest="100"
+                                    HorizontalOptions="Center"
+                                    Clicked="OnDiscardChoiceClicked" />
                         </Frame>
                     </VerticalStackLayout>
                     <ImageButton

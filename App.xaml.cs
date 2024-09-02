@@ -50,6 +50,13 @@ public partial class App : Application
             AppSettings.absGetUserAddress = new(baseUrl + AppSettings.GetUserAddress);
             AppSettings.absEditUserAddress = new(baseUrl + AppSettings.EditUserAddress);
             AppSettings.absCreateClimbAddress = new(baseUrl + AppSettings.CreateClimbAddress);
+            AppSettings.absGetClimbAddress = new(baseUrl + AppSettings.GetClimbAddress);
+            AppSettings.absGetClimbsAddress = new(baseUrl + AppSettings.GetClimbsAddress);
+            AppSettings.absIsWallAddress = new(baseUrl + AppSettings.IsWallAddress);
+            AppSettings.absLogClimbAddress = new(baseUrl + AppSettings.LogClimbAddress);
+            AppSettings.absAnonymousGetClimbAddress = new(baseUrl + AppSettings.AnonymousGetClimbAddress);
+            AppSettings.absGetUserClimbsAddress = new(baseUrl + AppSettings.GetUserClimbsAddress);
+            AppSettings.absFlagClimbAddress = new(baseUrl + AppSettings.FlagClimbAddress);
 
             // Retrieve the public key
             HttpResponseMessage response = await _client.GetAsync(AppSettings.absRetrievePublicKeyAddress);
